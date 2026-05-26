@@ -62,6 +62,7 @@ class TokenManager {
 }
 
 // API Helper Function
+//
 async function apiCall(endpoint, method = 'GET', data = null) {
     const token = TokenManager.getToken();
     const headers = {
