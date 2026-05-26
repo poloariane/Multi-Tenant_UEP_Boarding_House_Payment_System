@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="UEP Boarding House Payment System - Manage payments and tenants efficiently" />
+    <title>UEP BH Payment System - Dashboard</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+
+<body>
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+
+        <!-- HAMBURGER BUTTON -->
+        <i id="hamburger" class="fas fa-bars"></i>
+
+        <a href="about.html" class="title-link">
+            <div class="title">
+                <img src="assets/photos/logo.png" alt="UEP Logo">
+                Multi-Tenant Boarding House Payment System
+            </div>
+        </a>
+
+        <div class="top-buttons">
+            <a href="profile.html" class="admin-btn">Admin</a>
+            <a href="logout.html" class="logout-btn">Logout</a>
+        </div>
+    </div>
+
+    <!-- LAYOUT -->
+    <div class="layout dashboard-layout">
+
+        <!-- SIDEBAR -->
+        <div class="nav" id="sidebar">
+            <a href="dashboard.html" class="active"><i class="fas fa-chart-line"></i> <span>Dashboard</span></a>
+            <a href="tenant-list.html"><i class="fas fa-user-friends"></i> <span>Tenants</span></a>
+            <a href="pay-rent.html"><i class="fas fa-money-bill-wave"></i> <span>Pay Rent</span></a>
+            <a href="payment-records.html"><i class="fas fa-receipt"></i> <span>Payment Records</span></a>
+            <a href="reports.html"><i class="fas fa-file-alt"></i> <span>Reports</span></a>
+            <a href="notifications.html"><i class="fas fa-bell"></i> <span>Notifications</span></a>
+            <a href="settings.html"><i class="fas fa-cog"></i> <span>Settings</span></a>
+            <a href="calendar.html"><i class="fas fa-calendar"></i> <span>Calendar</span></a>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main">
+            <div class="section-title"><i class="fas fa-chart-line"></i> Dashboard</div>
+
+            <div class="grid">
+
+                <div class="box">
+                    <i class="fas fa-users"></i>
+                    <h3>Total Tenants</h3>
+                    <p id="totalTenants">0</p>
+                </div>
+
+                <div class="box">
+                    <i class="fas fa-check-circle"></i>
+                    <h3>Paid This Month</h3>
+                    <p id="paidThisMonth">0</p>
+                </div>
+
+                <div class="box">
+                    <i class="fas fa-calendar-day"></i>
+                    <h3>Upcoming Due Date</h3>
+                    <p id="nextDueDate">—</p>
+                </div>
+
+                <div class="box">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <h3>Unpaid This Month</h3>
+                    <p id="unpaidThisMonth">0</p>
+                </div>
+
+                <div class="box">
+                    <i class="fas fa-wallet"></i>
+                    <h3>Total Collected</h3>
+                    <p id="totalCollected">₱0</p>
+                </div>
+
+                <div class="box">
+                    <i class="fas fa-hourglass-half"></i>
+                    <h3>Outstanding Payments</h3>
+                    <p id="pendingPayments">0</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <footer class="dashboard-footer">
+        <div>
+            <p>Multi-Tenant Boarding House Payment System</p>
+            <span>Smart multi-tenant payment management with secure reporting, rent tracking, and tenant insights.</span>
+        </div>
+        <div class="footer-note">� 2025 UEP Boarding House Payment System. Built for a modern boarding house experience.</div>
+    </footer>
+
+<!-- DASHBOARD SCRIPT -->
+<script>
+// Sidebar toggle for mobile
+const hamburger = document.getElementById("hamburger");
+const sidebar = document.getElementById("sidebar");
+
+if (hamburger) {
+    hamburger.addEventListener("click", () => {
+        sidebar.classList.toggle("hidden");
+    });
+}
+
+// Close sidebar when clicking on a nav link
+document.querySelectorAll(".nav a, .sidebar a").forEach(link => {
+    link.addEventListener("click", () => {
+        if (window.innerWidth <= 768) {
+            sidebar.classList.add("hidden");
+        }
+    });
+});
+
+// Handle window resize
+window.addEventListener("resize", () => {
+    if (window.innerWidth > 768) {
+        sidebar.classList.remove("hidden");
+    }
+});
+
+// Role-based access control
+document.addEventListener("DOMContentLoaded", () => {
+    const role = localStorage.getItem("role");
+    const activeAdmin = JSON.parse(localStorage.getItem("activeAdmin") || "null");
+    
+    if (!activeAdmin && role !== "admin") {
+        window.location.href = "login.html";
+    }
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const tenants = JSON.parse(localStorage.getItem('tenants')) || {};
+    const payments = JSON.parse(localStorage.getItem('tenantPayments') || '[]');
+    const totalTenants = Object.values(tenants).reduce((sum, roomList) => sum + roomList.length, 0);
+
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    const paymentsThisMonth = payments.filter(payment => {
+        const paymentDate = new Date(payment.date || payment.paymentDate || payment.createdAt || '');
+        return !isNaN(paymentDate) && paymentDate.getMonth() === currentMonth && paymentDate.getFullYear() === currentYear;
+    });
+
+    const paidThisMonthSet = new Set(paymentsThisMonth.map(payment => {
+        return (payment.email || payment.name || payment.room || '').toString().trim().toLowerCase();
+    }).filter(Boolean));
+
+    const totalCollected = payments.reduce((sum, payment) => sum + (parseFloat(payment.amount) || 0), 0);
+    const unpaidThisMonth = Math.max(0, totalTenants - paidThisMonthSet.size);
+    const nextDueDate = new Date(currentYear, currentMonth + 1, 1);
+
+    const setText = (id, value) => {
+        const element = document.getElementById(id);
+        if (element) element.textContent = value;
+    };
+
+    setText('totalTenants', totalTenants);
+    setText('paidThisMonth', paidThisMonthSet.size);
+    setText('nextDueDate', nextDueDate.toLocaleString('default', { month: 'long', day: 'numeric', year: 'numeric' }));
+    setText('unpaidThisMonth', unpaidThisMonth);
+    setText('totalCollected', `₱${totalCollected.toLocaleString()}`);
+    setText('pendingPayments', unpaidThisMonth);
+
+    const role = localStorage.getItem('role') || 'tenant';
+    const boxes = document.querySelectorAll('.box');
+    if (role === 'tenant') {
+        // Tenants see: Total Tenants (0), Paid This Month (1), Upcoming Due Date (2), Unpaid This Month (3)
+        const allowed = [0, 1, 2, 3];
+        boxes.forEach((box, index) => {
+            if (!allowed.includes(index)) {
+                box.style.display = 'none';
+            }
+        });
+    } else {
+        // Admins see everything EXCEPT Upcoming Due Date (2)
+        boxes.forEach((box, index) => {
+            if (index === 2) box.style.display = 'none';
+        });
+    }
+
+    const reportsBtn = document.querySelector('a[href="reports.html"]');
+    const notifBtn = document.querySelector('a[href="notifications.html"]');
+    if (role === 'tenant') {
+        if (reportsBtn) reportsBtn.style.display = 'none';
+        if (notifBtn) notifBtn.style.display = 'none';
+    }
+
+    const adminBtn = document.querySelector('.admin-btn');
+    if (adminBtn) {
+        adminBtn.textContent = role === 'tenant' ? 'Profile' : 'Admin';
+        adminBtn.href = 'profile.html';
+    }
+
+    if (role === 'admin') {
+        const payRentLink = document.querySelector('a[href="pay-rent.html"]');
+        if (payRentLink) {
+            const icon = payRentLink.querySelector('i');
+            payRentLink.textContent = 'Tenant Payments';
+            if (icon) payRentLink.prepend(icon);
+        }
+    }
+});
+
+const ham = document.getElementById('hamburger');
+const side = document.getElementById('sidebar');
+if (ham && side) {
+    ham.addEventListener('click', () => side.classList.toggle('show'));
+}
+</script>
+<script src="assets/js/sidebar-active.js"></script>
+</body>
+</html>

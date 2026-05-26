@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Tenant — UEP BH Payment System</title>
+
+    <!-- FONT AWESOME ICONS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+
+<body>
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+        <i id="hamburger" class="fas fa-bars"></i>
+
+        <a href="about.html" class="title-link">
+            <div class="title">
+                <img src="assets/photos/logo.png">
+                UEP Boarding House Payment System
+            </div>
+        </a>
+
+        <div class="top-buttons">
+            <a href="tenant-list.html" class="back-btn admin-btn">Back</a>
+        </div>
+    </div>
+
+    <!-- LAYOUT -->
+    <div class="layout">
+
+        <!-- SIDEBAR -->
+        <div class="nav" id="sidebar">
+            <a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a>
+            <a href="tenant-list.html"><i class="fas fa-user-friends"></i> Tenants</a>
+            <a href="pay-rent.html"><i class="fas fa-money-bill-wave"></i> Pay Rent</a>
+            <a href="payment-records.html"><i class="fas fa-receipt"></i> Payment Records</a>
+            <a href="reports.html"><i class="fas fa-file-alt"></i> Reports</a>
+            <a href="notifications.html"><i class="fas fa-bell"></i> Notifications</a>
+            <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+            <a href="calendar.html"><i class="fas fa-calendar"></i> Calendar</a>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main">
+
+            <div class="section-title">
+                <i class="fas fa-user-plus"></i> Register / Add Tenant
+            </div>
+
+            <!-- FORM -->
+            <div class="form-box">
+
+                <label>Full Name</label>
+                <input type="text" id="tenantName" placeholder="Enter full name">
+
+                <label>Email</label>
+                <input type="email" id="email" placeholder="Enter email">
+
+                <label>Contact Number</label>
+                <input type="text" id="contact" placeholder="Enter contact number">
+
+                <label>Password</label>
+                <input type="password" id="password" placeholder="Create a password">
+
+                <label>Select Room</label>
+                <select id="roomSelect">
+                    <option disabled selected>Select Room</option>
+                    <option value="room1">Room 1</option>
+                    <option value="room2">Room 2</option>
+                    <option value="room3">Room 3</option>
+                    <option value="room4">Room 4</option>
+                    <option value="room5">Room 5</option>
+                    <option value="room6">Room 6</option>
+                    <option value="room7">Room 7</option>
+                    <option value="room8">Room 8</option>
+                    <option value="room9">Room 9</option>
+                    <option value="room10">Room 10</option>
+                </select>
+
+                <label>Monthly Rent (₱)</label>
+                <div class="input-group">
+                    <span class="prefix">₱</span>
+                    <input type="number" id="rent" value="1500">
+                </div>
+
+                <button onclick="addTenant()">Add Tenant</button>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT -->
+    <script>
+        const defaultMaxSlots = {
+            room1: 4, room2: 4, room3: 4, room4: 4,
+            room5: 4, room6: 8, room7: 8, room8: 4,
+            room9: 4, room10: 10
+        };
+
+        const defaultRentValues = {
+            room1: 1500, room2: 1200, room3: 1200, room4: 1500,
+            room5: 1200, room6: 1200, room7: 1200, room8: 1500,
+            room9: 1200, room10: 1200
+        };
+
+        function getRoomSettings() {
+            const hasSavedRoomSettings = localStorage.getItem("roomSettings") !== null;
+            const savedSettings = JSON.parse(localStorage.getItem("roomSettings") || "{}");
+            const settings = {};
+
+            if (!hasSavedRoomSettings) {
+                Object.keys(defaultMaxSlots).forEach(room => {
+                    settings[room] = {
+                        capacity: defaultMaxSlots[room],
+                        rent: defaultRentValues[room]
+                    };
+                });
+            }
+
+            Object.keys(savedSettings).forEach(room => {
+                settings[room] = {
+                    capacity: Number(savedSettings[room].capacity) || settings[room]?.capacity || 4,
+                    rent: Number(savedSettings[room].rent) || settings[room]?.rent || 1200
+                };
+            });
+
+            return settings;
+        }
+
+        function sortRooms(a, b) {
+            return Number(a.replace("room", "")) - Number(b.replace("room", ""));
+        }
+
+        function populateRooms() {
+            const roomSettings = getRoomSettings();
+            roomSelect.innerHTML = '<option disabled selected>Select Room</option>';
+
+            Object.keys(roomSettings).sort(sortRooms).forEach(room => {
+                const option = document.createElement("option");
+                option.value = room;
+                option.textContent = room.replace("room", "Room ");
+                roomSelect.appendChild(option);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            populateRooms();
+
+            roomSelect.addEventListener("change", () => {
+                const roomSettings = getRoomSettings();
+                if (roomSettings[roomSelect.value]) {
+                    document.getElementById("rent").value = roomSettings[roomSelect.value].rent;
+                }
+            });
+        });
+
+        function addTenant() {
+            const name = tenantName.value.trim();
+            const email = document.getElementById("email").value.trim();
+            const contact = document.getElementById("contact").value.trim();
+            const password = document.getElementById("password").value.trim();
+            const room = roomSelect.value;
+            const rent = document.getElementById("rent").value;
+            const roomSettings = getRoomSettings();
+
+            if (!name || !email || !contact || !password || !roomSettings[room]) {
+                alert("Please complete all fields.");
+                return;
+            }
+
+            let tenants = JSON.parse(localStorage.getItem("tenants")) || {};
+
+            if (!tenants[room]) tenants[room] = [];
+
+            const maxSlots = {};
+            Object.keys(roomSettings).forEach(roomKey => {
+                maxSlots[roomKey] = roomSettings[roomKey].capacity;
+            });
+
+            if (tenants[room].length >= maxSlots[room]) {
+                alert("No vacant slot available in this room!");
+                return;
+            }
+
+            tenants[room].push({
+                name,
+                email,
+                contact,
+                password,
+                rent
+            });
+
+            localStorage.setItem("tenants", JSON.stringify(tenants));
+
+            alert("Tenant successfully added!");
+            window.location.href = "tenant-list.html";
+        }
+    </script>
+
+    <!-- SIDEBAR TOGGLE -->
+    <script>
+        const ham = document.getElementById("hamburger");
+        const side = document.getElementById("sidebar");
+
+        ham.addEventListener("click", () => {
+            side.classList.toggle("show");
+        });
+    </script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const role = localStorage.getItem("role") || "tenant";
+    if (role === "admin") {
+        const payRentLink = document.querySelector('a[href="pay-rent.html"]');
+        if (payRentLink) {
+            // Keep the icon, just change the text
+            const icon = payRentLink.querySelector("i");
+            payRentLink.textContent = "Tenant Payments";
+            if (icon) {
+                payRentLink.prepend(icon); // Re-add the icon
+            }
+        }
+    }
+});
+</script>
+  <script src="assets/js/sidebar-active.js"></script>
+</body>
+</html>

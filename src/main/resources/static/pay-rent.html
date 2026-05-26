@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pay Rent — UEP BH Payment System</title>
+
+    <!-- ADDED ICONS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+        <i id="hamburger" class="fas fa-bars"></i>
+        <a href="about.html" class="title-link">
+            <div class="title">
+                <img src="assets/photos/logo.png">
+                Multi-Tenant Boarding House Payment System
+            </div>
+        </a>
+        <div class="top-buttons">
+            <a href="profile.html" class="admin-btn">Admin</a>
+            <a href="logout.html" class="logout-btn">Logout</a>
+        </div>
+    </div>
+
+    <div class="layout">
+
+        <!-- SIDEBAR (UPDATED) -->
+        <div class="nav" id="sidebar">
+            <a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a>
+            <a href="tenant-list.html"><i class="fas fa-user-friends"></i> Tenants</a>
+            <a href="pay-rent.html"><i class="fas fa-money-bill-wave"></i> Pay Rent</a>
+            <a href="payment-records.html"><i class="fas fa-receipt"></i> Payment Records</a>
+            <a href="reports.html"><i class="fas fa-file-alt"></i> Reports</a>
+            <a href="notifications.html"><i class="fas fa-bell"></i> Notifications</a>
+            <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+            <a href="calendar.html"><i class="fas fa-calendar"></i> Calendar</a>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main">
+
+            <!-- SECTION TITLE WITH ICON -->
+            <div class="section-title">
+                <i class="fas fa-money-check-alt"></i> Pay Your Rent
+            </div>
+
+            <!-- ADMIN VIEW -->
+            <div id="admin-view" class="admin-view hidden">
+                <div class="admin-table-wrapper">
+                    <table class="search-table">
+                        <thead>
+                            <tr>
+                                <th>Tenant Name</th>
+                                <th>Room Number</th>
+                                <th>Amount</th>
+                                <th>Payment Type</th>
+                                <th>Payment Method</th>
+                                <th>Receipt</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tenant-payments"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TENANT VIEW -->
+            <div id="tenant-view">
+                <div class="payment-form">
+                    <form onsubmit="submitPayment(event)">
+                        <label><i class="fas fa-user"></i> Tenant Name</label>
+                        <input type="text" id="tenant-name" placeholder="Enter Your Full Name" required>
+
+                        <label><i class="fas fa-door-open"></i> Room Number</label>
+                        <input type="text" id="room-number" placeholder="Enter Your Room Number (e.g. room1)" required pattern="room[0-9]+" title="Enter like room1, room2, etc.">
+
+                        <label><i class="fas fa-calendar-alt"></i> Month to Pay</label>
+                        <select id="payment-month" required>
+                            <option disabled selected>Select month</option>
+                        </select>
+
+                        <label><i class="fas fa-coins"></i> Amount to Pay</label>
+                        <input type="number" id="amount" placeholder="Enter amount" required>
+
+                        <label><i class="fas fa-hand-holding-dollar"></i> Payment Type</label>
+                        <select id="payment-type" required>
+                            <option disabled selected>Select payment type</option>
+                            <option value="full">Full Payment</option>
+                            <option value="partial">Partial Payment</option>
+                        </select>
+
+                        <label><i class="fas fa-wallet"></i> Payment Method</label>
+                        <select id="payment-method" required>
+                            <option disabled selected>Select payment method</option>
+                            <option value="GCash">GCash</option>
+                            <option value="PayMaya">PayMaya</option>
+                        </select>
+
+                        <!-- RECEIPT UPLOAD (HIDDEN UNTIL USER RETURNS FROM PAYMENT APP) -->
+                        <div id="receipt-upload-section" class="receipt-upload-section hidden" style="display:none;">
+                            <h3>Upload Payment Receipt</h3>
+                            <p style="font-size:0.95rem; color:var(--text-secondary); margin-bottom:12px;">After completing payment in GCash or PayMaya, return to this page and upload your receipt.</p>
+                            <input type="file" id="receipt-file" accept="image/*">
+                            <img id="receipt-preview" class="hidden" style="width:180px; margin-top:10px; border-radius:8px;">
+                            <button type="button" id="submit-payment-btn" class="primary-btn" style="margin-top:15px; width:100%;"> Submit </button>
+                        </div>
+
+                        <button type="submit" id="pay-rent-btn">Pay Rent</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script>
+    const rentValues = {
+        room1: 1500, room2: 1200, room3: 1200, room4: 1500,
+        room5: 1200, room6: 1200, room7: 1200, room8: 1500,
+        room9: 1200, room10: 1200
+    };
+
+    const savedRoomSettings = JSON.parse(localStorage.getItem("roomSettings") || "{}");
+    Object.keys(savedRoomSettings).forEach(room => {
+        rentValues[room] = Number(savedRoomSettings[room].rent) || rentValues[room] || 1200;
+    });
+
+    function getPaymentDate(payment) {
+        if (payment.paymentMonth) {
+            const monthDate = new Date(`${payment.paymentMonth}-01T00:00:00`);
+            return Number.isNaN(monthDate.getTime()) ? null : monthDate;
+        }
+
+        const parsed = new Date(payment.date || payment.dateString || 0);
+        return Number.isNaN(parsed.getTime()) ? null : parsed;
+    }
+
+    function getMonthLabel(date) {
+        return date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+    }
+
+    function getPreviousMonth(date) {
+        return new Date(date.getFullYear(), date.getMonth() - 1, 1);
+    }
+
+    function normalizeRoom(value) {
+        return String(value || "").trim().toLowerCase().replace(/\s+/g, "");
+    }
+
+    function getMonthValue(date) {
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+    }
+
+    function getMonthDate(value) {
+        const parsed = new Date(`${value}-01T00:00:00`);
+        return Number.isNaN(parsed.getTime()) ? null : parsed;
+    }
+
+    function hasFullPaymentForMonth(name, room, targetMonth, roomRent) {
+        const tenantName = name.trim().toLowerCase();
+        const payments = JSON.parse(localStorage.getItem("tenantPayments") || "[]");
+        const totalPaid = payments.reduce((sum, payment) => {
+            const paymentDate = getPaymentDate(payment);
+            const paymentName = String(payment.name || "").trim().toLowerCase();
+            const paymentRoom = normalizeRoom(payment.room);
+
+            if (
+                paymentDate &&
+                paymentName === tenantName &&
+                paymentRoom === room &&
+                paymentDate.getMonth() === targetMonth.getMonth() &&
+                paymentDate.getFullYear() === targetMonth.getFullYear()
+            ) {
+                return sum + Number(payment.amount || 0);
+            }
+
+            return sum;
+        }, 0);
+
+        return totalPaid >= roomRent;
+    }
+
+    function canProceedWithCurrentMonthPayment(name, room, roomRent) {
+        if ((localStorage.getItem("role") || "tenant") !== "tenant") {
+            return true;
+        }
+
+        const selectedMonth = getMonthDate(document.getElementById("payment-month").value);
+        if (!selectedMonth) {
+            alert("Please select the month you want to pay.");
+            return false;
+        }
+
+        const previousMonth = getPreviousMonth(selectedMonth);
+        const currentMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+
+        if (selectedMonth.getTime() === currentMonth.getTime()) {
+            return true;
+        }
+
+        if (selectedMonth.getTime() > currentMonth.getTime()) {
+            if (hasFullPaymentForMonth(name, room, previousMonth, roomRent)) {
+                return true;
+            }
+            alert(`You cannot proceed with ${getMonthLabel(selectedMonth)} yet. Please settle your ${getMonthLabel(previousMonth)} rent first.`);
+            return false;
+        }
+
+        return true;
+    }
+
+    function isMonthSelectable(name, room, monthDate, roomRent) {
+        if (hasFullPaymentForMonth(name, room, monthDate, roomRent)) {
+            return false;
+        }
+
+        const currentMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+        
+        if (monthDate.getTime() === currentMonth.getTime()) {
+            return true;
+        }
+
+        const previousMonth = getPreviousMonth(monthDate);
+        return hasFullPaymentForMonth(name, room, previousMonth, roomRent);
+    }
+
+    function populatePaymentMonths() {
+        const monthSelect = document.getElementById("payment-month");
+        if (!monthSelect) return;
+
+        const name = document.getElementById("tenant-name").value.trim();
+        const room = normalizeRoom(document.getElementById("room-number").value);
+        const roomRent = rentValues[room];
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonthIndex = currentDate.getMonth();
+
+        monthSelect.innerHTML = '<option disabled selected>Select month</option>';
+
+        for (let monthIndex = currentMonthIndex; monthIndex < 12; monthIndex++) {
+            const monthDate = new Date(currentYear, monthIndex, 1);
+            const option = document.createElement("option");
+            option.value = getMonthValue(monthDate);
+            option.textContent = getMonthLabel(monthDate);
+
+            if (!name || !roomRent) {
+                option.disabled = true;
+            } else if (!isMonthSelectable(name, room, monthDate, roomRent)) {
+                option.disabled = true;
+                option.textContent += hasFullPaymentForMonth(name, room, monthDate, roomRent)
+                    ? " - Paid"
+                    : " - Pay current month first";
+            }
+
+            monthSelect.appendChild(option);
+        }
+    }
+
+    function submitPayment(event) {
+        event.preventDefault();
+        const name = document.getElementById("tenant-name").value.trim();
+        const room = normalizeRoom(document.getElementById("room-number").value);
+        const selectedMonthValue = document.getElementById("payment-month").value;
+        const selectedMonth = getMonthDate(selectedMonthValue);
+        const amount = Number(document.getElementById("amount").value);
+        const method = document.getElementById("payment-method").value;
+        const payType = document.getElementById("payment-type").value;
+
+        if (!rentValues[room]) {
+            alert("❌ Invalid room number. Please enter room1, room2, etc");
+            return;
+        }
+
+        const roomRent = rentValues[room];
+
+        if (!selectedMonth || !isMonthSelectable(name, room, selectedMonth, roomRent)) {
+            alert("Please select the earliest unpaid month before proceeding.");
+            populatePaymentMonths();
+            return;
+        }
+
+        if (payType === "full") {
+            if (amount !== roomRent) {
+                alert(`❌ Full payment requires EXACT RENT AMOUNT: ₱${roomRent}`);
+                return;
+            }
+        }
+
+        if (payType === "partial") {
+            if (amount <= 0 || amount >= roomRent) {
+                alert(`❌ Partial payment must be LESS than full rent (₱${roomRent}) and greater than ₱0.`);
+                return;
+            }
+        }
+
+        if (amount <= 0) {
+            alert("❌ Amount must be greater than 0");
+            return;
+        }
+
+        if (!canProceedWithCurrentMonthPayment(name, room, roomRent)) {
+            return;
+        }
+
+        if (method === "GCash") {
+            localStorage.setItem("pendingUpload", JSON.stringify({ name, room, amount, method, payType, paymentMonth: selectedMonthValue, date: selectedMonth.toLocaleString() }));
+            window.location.href = "https://www.gcash.com/";
+        } else if (method === "PayMaya") {
+            localStorage.setItem("pendingUpload", JSON.stringify({ name, room, amount, method, payType, paymentMonth: selectedMonthValue, date: selectedMonth.toLocaleString() }));
+            window.location.href = "https://www.paymaya.com/";
+        } else {
+            alert("❌ Please select a payment method.");
+            return;
+        }
+    }
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const role = localStorage.getItem("role"); // "admin" or "tenant"
+        const tenantView = document.getElementById("tenant-view");
+        const adminView = document.getElementById("admin-view");
+        const sectionTitle = document.querySelector(".section-title");
+        const payRentNav = document.querySelector('a[href="pay-rent.html"]');
+
+        // Show/hide based on role and update title/nav text
+        if (role === "admin") {
+            tenantView.style.display = "none";
+            tenantView.classList.add("hidden");
+            adminView.classList.remove("hidden");
+            adminView.style.display = "block";
+            if(sectionTitle) sectionTitle.innerHTML = '<i class="fas fa-money-check-alt"></i> Tenant Payments';
+            if(payRentNav) payRentNav.innerHTML = '<i class="fas fa-money-bill-wave"></i> Tenant Payments';
+        } else {
+            tenantView.style.display = "block";
+            tenantView.classList.remove("hidden");
+            adminView.classList.add("hidden");
+            adminView.style.display = "none";
+            if(sectionTitle) sectionTitle.innerHTML = '<i class="fas fa-money-check-alt"></i> Pay Your Rent';
+            if(payRentNav) payRentNav.innerHTML = '<i class="fas fa-money-bill-wave"></i> Pay Rent';
+
+            const activeTenant = JSON.parse(localStorage.getItem("activeTenant") || "null");
+            if (activeTenant) {
+                const tenantNameInput = document.getElementById("tenant-name");
+                const roomInput = document.getElementById("room-number");
+                if (tenantNameInput && activeTenant.name) tenantNameInput.value = activeTenant.name;
+                if (roomInput && activeTenant.room) roomInput.value = activeTenant.room;
+            }
+
+            populatePaymentMonths();
+            document.getElementById("tenant-name")?.addEventListener("input", populatePaymentMonths);
+            document.getElementById("room-number")?.addEventListener("input", populatePaymentMonths);
+        }
+
+        // SIDEBAR menu buttons
+        const reportsBtn = document.querySelector('a[href="reports.html"]');
+        const notifBtn = document.querySelector('a[href="notifications.html"]');
+        if(role === "tenant") {
+            if (reportsBtn) reportsBtn.style.display = "none";
+            if (notifBtn) notifBtn.style.display = "none";
+        }
+
+        // Hamburger toggle
+        const ham = document.getElementById("hamburger");
+        const side = document.getElementById("sidebar");
+        ham.addEventListener("click", () => {
+            side.classList.toggle("show");
+        });
+    });
+</script>
+
+<script>
+    // Handle receipt upload after returning from payment app
+    document.addEventListener("DOMContentLoaded", () => {
+        const pending = localStorage.getItem("pendingUpload");
+        const receiptSection = document.getElementById("receipt-upload-section");
+        const originalBtn = document.getElementById("pay-rent-btn");
+
+        if (receiptSection) {
+            receiptSection.style.display = "none";
+            receiptSection.classList.add("hidden");
+        }
+        if (originalBtn) {
+            originalBtn.style.display = "block";
+        }
+
+        if (!pending) {
+            return;
+        }
+
+        const data = JSON.parse(pending);
+
+        // Show receipt upload section
+        if (receiptSection) {
+            receiptSection.classList.remove("hidden");
+            receiptSection.style.display = "block";
+        }
+
+        // Hide original Pay Rent button
+        if (originalBtn) originalBtn.style.display = "none";
+
+        // Preview selected image
+        document.getElementById("receipt-file").addEventListener("change", e => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const preview = document.getElementById("receipt-preview");
+            preview.src = URL.createObjectURL(file);
+            preview.style.display = "block";
+        });
+
+        // Final Submit Payment
+        document.getElementById("submit-payment-btn").addEventListener("click", () => {
+            const fileInput = document.getElementById("receipt-file");
+            if (!fileInput.files[0]) {
+                alert("❌ Please upload your receipt first.");
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Save payment record including receipt image
+                const record = { ...data, receipt: e.target.result };
+                const payments = JSON.parse(localStorage.getItem("tenantPayments") || "[]");
+                payments.push(record);
+                localStorage.setItem("tenantPayments", JSON.stringify(payments));
+                alert("✅ Payment submitted successfully!");
+
+                // Remove pendingUpload so it doesn't trigger redirect again
+                localStorage.removeItem("pendingUpload");
+
+                // Hide upload section and reset form
+                if (receiptSection) {
+                    receiptSection.style.display = "none";
+                    receiptSection.classList.add("hidden");
+                }
+                document.getElementById("tenant-name").value = "";
+                document.getElementById("room-number").value = "";
+                document.getElementById("payment-month").selectedIndex = 0;
+                document.getElementById("amount").value = "";
+                document.getElementById("payment-type").selectedIndex = 0;
+                document.getElementById("payment-method").selectedIndex = 0;
+                populatePaymentMonths();
+
+                // Show original Pay Rent button again
+                if (originalBtn) originalBtn.style.display = "block";
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+        });
+    });
+</script>
+
+
+<!-- Receipt Lightbox -->
+<div id="lightbox" class="lightbox">
+    <img id="lightbox-img" src="" alt="Full receipt">
+    <button id="lightbox-close" class="lightbox-close" aria-label="Close">&times;</button>
+</div>
+
+<script>
+function attachLightbox(targetRoot) {
+    const lightbox   = document.getElementById("lightbox");
+    const lightboxImg = document.getElementById("lightbox-img");
+    const closeBtn   = document.getElementById("lightbox-close");
+
+    const images = targetRoot.querySelectorAll(".receipt-img");
+    images.forEach(img => {
+        img.replaceWith(img.cloneNode(true));
+    });
+
+    (targetRoot || document).querySelectorAll(".receipt-img").forEach(img => {
+        img.addEventListener("click", () => {
+            lightboxImg.src = img.src;
+            lightbox.classList.add("active");
+            document.body.style.overflow = "hidden";
+        });
+    });
+
+    if (closeBtn) {
+        closeBtn.onclick = () => {
+            lightbox.classList.remove("active");
+            lightboxImg.src = "";
+            document.body.style.overflow = "";
+        };
+    }
+}
+
+document.addEventListener("click", (e) => {
+    const lightbox = document.getElementById("lightbox");
+    if (e.target === lightbox) {
+        lightbox.classList.remove("active");
+        lightbox.querySelector("#lightbox-img").src = "";
+        document.body.style.overflow = "";
+    }
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    if (localStorage.getItem("role") !== "admin") return;
+
+    const tbody = document.getElementById("tenant-payments");
+
+    function formatPaymentType(type) {
+        return type === "full" ? "Full Payment" : type === "partial" ? "Partial Payment" : type;
+    }
+
+    function renderAdminPayments() {
+        const payments = JSON.parse(localStorage.getItem("tenantPayments") || "[]");
+        tbody.innerHTML = "";
+
+        if (payments.length === 0) {
+            const emptyRow = document.createElement("tr");
+            emptyRow.innerHTML = `<td colspan="6" style="text-align:center; color:#6b7280; padding:18px;">No tenant payments yet.</td>`;
+            tbody.appendChild(emptyRow);
+            return;
+        }
+
+        payments.forEach(payment => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${payment.name}</td>
+                <td>${payment.room}</td>
+                <td>₱${payment.amount}</td>
+                <td>${formatPaymentType(payment.payType)}</td>
+                <td>${payment.method}</td>
+                <td>${payment.receipt
+                    ? `<img src="${payment.receipt}" alt="Receipt" class="receipt-img" />`
+                    : '<span class="text-muted">No receipt</span>'}</td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        attachLightbox(tbody);
+    }
+
+    renderAdminPayments();
+
+    window.addEventListener("storage", event => {
+        if (event.key === "tenantPayments") {
+            renderAdminPayments();
+        }
+    });
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const role = localStorage.getItem("role") || "tenant";
+    const adminBtn = document.querySelector(".admin-btn");
+
+    if (adminBtn) {
+        if (role === "tenant") {
+            adminBtn.textContent = "Profile";
+            adminBtn.href = "profile.html"; 
+        } else {
+            adminBtn.textContent = "Admin";
+            adminBtn.href = "profile.html"; 
+        }
+    }
+});
+</script>
+
+  <script src="assets/js/sidebar-active.js"></script>
+</body>
+</html>

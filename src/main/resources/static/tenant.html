@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <title>UEP Boarding House Payment System — Tenants V4</title>
+
+    
+</head>
+
+<body>
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+        <a href="about.html" class="title-link">
+            <div class="title">Multi-Tenant Boarding House Payment System</div>
+        </a>
+
+        <div class="top-buttons">
+            <a href="profile.html" class="admin-btn">Admin</a>
+            <a href="logout.html" class="logout-btn">Logout</a>
+        </div>
+    </div>
+
+    <!-- LAYOUT -->
+    <div class="layout">
+
+        <!-- SIDEBAR -->
+        <div class="nav">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="tenant-list.html">Tenants</a>
+            <a href="Pay Rent.html">Pay Rent</a>
+            <a href="payment-records.html">Payment Records</a>
+            <a href="reports.html">Reports</a>
+            <a href="notifications.html">Notifications</a>
+            <a href="settings.html">Settings</a>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main">
+            <div class="section-title">Tenants Overview</div>
+
+            <!-- ROOM BOXES (same structure, only colors updated) -->
+
+            <div class="room-box" onclick="openRoom(1)">
+    <div class="room-header">
+        <h2>Room 1</h2>
+        <div class="header-info-container">
+            <div class="capacity-info">Capacity: 4 | Available: 2</div>
+            <div class="rent">₱1,500</div>
+        </div>
+    </div>
+    <div class="tenant-list">
+        <p><span class="tenant-icon"></span> Krisha Amoyan</p>
+        <p><span class="tenant-icon"></span> Glaiza Mae Dista</p>
+    </div>
+    <a href="add-tenant.html" class="add-tenant-btn" onclick="event.stopPropagation()">+ Add Tenant to Room 1</a>
+</div>
+
+<div class="room-box" onclick="openRoom(2)">
+    <div class="room-header">
+        <h2>Room 2</h2>
+        <div class="header-info-container">
+            <div class="capacity-info">Capacity: 4 | Available: 1</div>
+            <div class="rent">₱1,200</div>
+        </div>
+    </div>
+    <div class="tenant-list">
+        <p><span class="tenant-icon"></span> Kristel Ann Potot</p>
+        <p><span class="tenant-icon"></span> Julie Anne Atencio</p>
+    </div>
+    <a href="add-tenant.html" class="add-tenant-btn" onclick="event.stopPropagation()">+ Add Tenant to Room 2</a>
+</div>
+
+<div class="room-box" onclick="openRoom(3)">
+    <div class="room-header">
+        <h2>Room 3</h2>
+        <div class="header-info-container">
+            <div class="capacity-info">Capacity: 4 | Available: 1</div>
+            <div class="rent">₱1,200</div>
+        </div>
+    </div>
+    <div class="tenant-list">
+        <p><span class="tenant-icon"></span> Al Lyn Necoyco</p>
+        <p><span class="tenant-icon"></span> Lourdy De Guia Carino</p>
+    </div>
+    <a href="add-tenant.html" class="add-tenant-btn" onclick="event.stopPropagation()">+ Add Tenant to Room 3</a>
+</div>
+
+<div class="room-box" onclick="openRoom(4)">
+    <div class="room-header">
+        <h2>Room 4</h2>
+        <div class="header-info-container">
+            <div class="capacity-info">Capacity: 4 | Available: 2</div>
+            <div class="rent">₱1,500</div>
+        </div>
+    </div>
+    <div class="tenant-list">
+        <p><span class="tenant-icon"></span> Mary Jean Cerse</p>
+        <p><span class="tenant-icon"></span> Mercy Cerse</p>
+    </div>
+    <a href="add-tenant.html" class="add-tenant-btn" onclick="event.stopPropagation()">+ Add Tenant to Room 4</a>
+</div>
+
+<div class="room-box" onclick="openRoom(5)">
+    <div class="room-header">
+        <h2>Room 5</h2>
+        <div class="header-info-container">
+            <div class="capacity-info">Capacity: 4 | Available: 1</div>
+            <div class="rent">₱1,200</div>
+        </div>
+    </div>
+    <div class="tenant-list">
+        <p><span class="tenant-icon"></span> Amer Morallos</p>
+        <p><span class="tenant-icon"></span> Chester Amoyan</p>
+    </div>
+    <a href="add-tenant.html" class="add-tenant-btn" onclick="event.stopPropagation()">+ Add Tenant to Room 5</a>
+</div>
+
+<div class="room-box" onclick="openRoom(6)">
+    <div class="room-header">
+        <h2>Room 6</h2>
+        <div class="header-info-container">
+            <div class="capacity-info">Capacity: 8 | Available: 3</div>
+            <div class="rent">₱1,200</div>
+        </div>
+    </div>
+    <div class="tenant-list">
+        <p><span class="tenant-icon"></span> Domingo Pala</p>
+        <p><span class="tenant-icon"></span> Clark Acedera</p>
+    </div>
+    <a href="add-tenant.html" class="add-tenant-btn" onclick="event.stopPropagation()">+ Add Tenant to Room 6</a>
+</div>
+
+<div class="room-box" onclick="openRoom(7)">
+    <div class="room-header">
+        <h2>Room 7</h2>
+        <div class="header-info-container">
+            <div class="capacity-info">Capacity: 8 | Available: 4</div>
+            <div class="rent">₱1,200</div>
+        </div>
+    </div>
+    <div class="tenant-list">
+        <p><span class="tenant-icon"></span> Grace Canales</p>
+        <p><span class="tenant-icon"></span> Ariane Polo</p>
+    </div>
+    <a href="add-tenant.html" class="add-tenant-btn" onclick="event.stopPropagation()">+ Add Tenant to Room 7</a>
+</div>
+
+<div class="room-box" onclick="openRoom(8)">
+    <div class="room-header">
+        <h2>Room 8</h2>
+        <div class="header-info-container">
+            <div class="capacity-info">Capacity: 2 | Available: 0</div>
+            <div class="rent">₱1,500</div>
+        </div>
+    </div>
+    <div class="tenant-list">
+        <p><span class="tenant-icon"></span> Jennie Senar</p>
+        <p><span class="tenant-icon"></span> Crestine Alvez</p>
+    </div>
+    <a href="add-tenant.html" class="add-tenant-btn" onclick="event.stopPropagation()">+ Add Tenant to Room 8</a>
+</div>
+
+<div class="room-box" onclick="openRoom(9)">
+    <div class="room-header">
+        <h2>Room 9</h2>
+        <div class="header-info-container">
+            <div class="capacity-info">Capacity: 4 | Available: 2</div>
+            <div class="rent">₱1,200</div>
+        </div>
+    </div>
+    <div class="tenant-list">
+        <p><span class="tenant-icon"></span> Jessie Jarito</p>
+        <p><span class="tenant-icon"></span> Dante Ochenita</p>
+    </div>
+    <a href="add-tenant.html" class="add-tenant-btn" onclick="event.stopPropagation()">+ Add Tenant to Room 9</a>
+</div>
+
+<div class="room-box" onclick="openRoom(10)">
+    <div class="room-header">
+        <h2>Room 10</h2>
+        <div class="header-info-container">
+            <div class="capacity-info">Capacity: 10 | Available: 5</div>
+            <div class="rent">₱1,200</div>
+        </div>
+    </div>
+    <div class="tenant-list">
+        <p><span class="tenant-icon"></span> Jonathan Aoyang</p>
+        <p><span class="tenant-icon"></span> Clark Bello</p>
+    </div>
+    <a href="add-tenant.html" class="add-tenant-btn" onclick="event.stopPropagation()">+ Add Tenant to Room 10</a>
+</div>
+
+
+    <script>
+function openRoom(roomNumber) {
+    window.location.href = "tenant-list.html?room=" + roomNumber;
+}
+</script>
+
+
+  <script src="assets/js/sidebar-active.js"></script>
+
+</body>
+</html>

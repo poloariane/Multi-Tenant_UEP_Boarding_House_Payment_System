@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />    <link rel="stylesheet" href="assets/css/styles.css"><title>Logging Out...</title>
+
+
+</head>
+
+<body>
+
+<div class="logout-box">
+    <h2>You have been logged out</h2>
+    <p>Redirecting you to the login page...</p>
+    <div class="loading">Please wait...</div>
+</div>
+
+<script>
+    // Remove ONLY the active session
+    localStorage.removeItem("activeTenant");
+    sessionStorage.clear(); // optional but safe
+
+    // Redirect to login page after 2 seconds
+    setTimeout(() => {
+        window.location.href = "login.html";
+    }, 2000);
+</script>
+
+  <script src="assets/js/sidebar-active.js"></script>
+
+</body>
+</html>

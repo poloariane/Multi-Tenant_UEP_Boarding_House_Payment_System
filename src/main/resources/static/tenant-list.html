@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tenants List — UEP BH Payment System</title>
+
+<!-- Font Awesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+<div class="topbar">
+
+    <!-- HAMBURGER BUTTON (added from Dashboard) -->
+    <i id="hamburger" class="fas fa-bars"></i>
+
+    <a href="about.html" class="title-link">
+        <div class="title">
+                <img src="assets/photos/logo.png">
+                Multi-Tenant Boarding House Payment System
+            </div>
+    </a>
+
+    <div class="topbar-buttons">
+        <a href="add-tenant.html" class="btn-add"><i class="fas fa-user-plus"></i><span class="btn-text"> Add Tenant</span></a>
+        <a href="remove-tenant.html" class="btn-danger"><i class="fas fa-user-minus"></i><span class="btn-text"> Remove Tenant</span></a>
+        <button type="button" id="addRoomBtn" class="btn-add"><i class="fas fa-door-open"></i><span class="btn-text"> Add Room</span></button>
+        <button type="button" id="removeRoomBtn" class="btn-danger"><i class="fas fa-door-closed"></i><span class="btn-text"> Remove Room</span></button>
+    </div>
+</div>
+
+<div class="layout">
+
+    <!-- UPDATED SIDEBAR -->
+    <div class="nav" id="sidebar">
+        <a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a>
+        <a href="tenant-list.html"><i class="fas fa-user-friends"></i> Tenants</a>
+        <a href="pay-rent.html"><i class="fas fa-money-bill-wave"></i> Pay Rent</a>
+        <a href="payment-records.html"><i class="fas fa-receipt"></i> Payment Records</a>
+        <a href="reports.html"><i class="fas fa-file-alt"></i> Reports</a>
+        <a href="notifications.html"><i class="fas fa-bell"></i> Notifications</a>
+        <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+        <a href="calendar.html"><i class="fas fa-calendar"></i> Calendar</a>
+    </div>
+
+    <div class="main">
+
+        <div class="section-title">
+            <i class="fas fa-users"></i> Tenants List
+        </div>
+
+        <div id="rooms-container"></div>
+
+    </div>
+</div>
+
+<div id="room-detail" class="room-detail-modal hidden" aria-hidden="true"></div>
+
+<!-- TENANT LIST LOGIC (unchanged) -->
+
+
+<!-- ROLE RESTRICTIONS (unchanged) -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const role = localStorage.getItem("role");
+
+    const addTenantBtn = document.querySelector('a[href="add-tenant.html"]');
+    const removeTenantBtn = document.querySelector('a[href="remove-tenant.html"]');
+    const addRoomBtn = document.getElementById("addRoomBtn");
+    const removeRoomBtn = document.getElementById("removeRoomBtn");
+
+    const reportsBtn = document.querySelector('a[href="reports.html"]');
+    const notifBtn = document.querySelector('a[href="notifications.html"]');
+
+    if (role === "tenant") {
+        if (addTenantBtn) addTenantBtn.style.display = "none";
+        if (removeTenantBtn) removeTenantBtn.style.display = "none";
+        if (addRoomBtn) addRoomBtn.style.display = "none";
+        if (removeRoomBtn) removeRoomBtn.style.display = "none";
+        if (reportsBtn) reportsBtn.style.display = "none";
+        if (notifBtn) notifBtn.style.display = "none";
+    }
+});
+</script>
+
+<!-- SIDEBAR TOGGLE (from dashboard) -->
+<script>
+const ham = document.getElementById("hamburger");
+const side = document.getElementById("sidebar");
+
+ham.addEventListener("click", () => {
+    side.classList.toggle("show");
+});
+</script>
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+
+    // MAX capacity per room
+    const maxSlots = {
+        room1: 4, room2: 4, room3: 4, room4: 4,
+        room5: 4, room6: 8, room7: 8, room8: 4,
+        room9: 4, room10: 10
+    };
+
+    // Rent per room
+    const rentValues = {
+        room1: 1500, room2: 1200, room3: 1200, room4: 1500,
+        room5: 1200, room6: 1200, room7: 1200, room8: 1500,
+        room9: 1200, room10: 1200
+    };
+
+    let tenants = JSON.parse(localStorage.getItem('tenants')) || {};
+    const payments = JSON.parse(localStorage.getItem("tenantPayments") || "[]");
+    const role = localStorage.getItem("role") || "tenant";
+    const activeTenant = JSON.parse(localStorage.getItem("activeTenant") || "null");
+    const hasSavedRoomSettings = localStorage.getItem("roomSettings") !== null;
+    const roomSettings = JSON.parse(localStorage.getItem("roomSettings") || "{}");
+
+    if (hasSavedRoomSettings) {
+        Object.keys(maxSlots).forEach(room => {
+            delete maxSlots[room];
+            delete rentValues[room];
+        });
+    }
+
+    Object.keys(roomSettings).forEach(room => {
+        if (!/^room\d+$/.test(room)) {
+            delete roomSettings[room];
+            return;
+        }
+
+        maxSlots[room] = Number(roomSettings[room].capacity) || maxSlots[room] || 4;
+        rentValues[room] = Number(roomSettings[room].rent) || rentValues[room] || 1200;
+    });
+
+    Object.keys(tenants).forEach(room => {
+        if (!/^room\d+$/.test(room)) {
+            delete tenants[room];
+            return;
+        }
+
+        if (!maxSlots[room]) {
+            maxSlots[room] = Math.max(4, tenants[room].length);
+            rentValues[room] = 1200;
+            roomSettings[room] = { capacity: maxSlots[room], rent: rentValues[room] };
+        }
+    });
+
+    localStorage.setItem("tenants", JSON.stringify(tenants));
+
+    const container = document.getElementById("rooms-container");
+    const detailPanel = document.getElementById("room-detail");
+    const addRoomBtn = document.getElementById("addRoomBtn");
+    const removeRoomBtn = document.getElementById("removeRoomBtn");
+
+    function escapeHTML(value) {
+        return String(value ?? "").replace(/[&<>"']/g, char => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        }[char]));
+    }
+
+    function normalizeRoomKey(value) {
+        const roomNumber = String(value || "").trim().toLowerCase().replace("room", "").replace(/\s+/g, "");
+        return roomNumber && /^\d+$/.test(roomNumber) ? `room${Number(roomNumber)}` : "";
+    }
+
+    function formatRoomName(room) {
+        return room.replace("room", "Room ");
+    }
+
+    function getPaymentDate(payment) {
+        if (payment.paymentMonth) {
+            const monthDate = new Date(`${payment.paymentMonth}-01T00:00:00`);
+            return Number.isNaN(monthDate.getTime()) ? null : monthDate;
+        }
+
+        const parsed = new Date(payment.date || payment.dateString || 0);
+        return Number.isNaN(parsed.getTime()) ? null : parsed;
+    }
+
+    function getTenantPayments(tenant, room) {
+        const tenantName = String(typeof tenant === "object" ? tenant.name : tenant).trim().toLowerCase();
+        return payments.filter(payment => {
+            const paymentName = String(payment.name || "").trim().toLowerCase();
+            const paymentRoom = normalizeRoomKey(payment.room);
+            return paymentName === tenantName && paymentRoom === room;
+        });
+    }
+
+    function getPaidMonths(tenantPayments) {
+        return tenantPayments
+            .map(getPaymentDate)
+            .filter(Boolean)
+            .sort((a, b) => b - a)
+            .map(date => date.toLocaleDateString("en-US", { month: "long", year: "numeric" }));
+    }
+
+    function getMonthLabel(date) {
+        return date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+    }
+
+    function getPaymentMonthsText(paidMonths) {
+        const currentMonth = getMonthLabel(new Date());
+        const uniquePaidMonths = [...new Set(paidMonths)];
+        const hasCurrentMonthPayment = uniquePaidMonths.includes(currentMonth);
+
+        if (!uniquePaidMonths.length) {
+            return `Unpaid: ${currentMonth}`;
+        }
+
+        if (!hasCurrentMonthPayment) {
+            return `Paid: ${uniquePaidMonths.map(escapeHTML).join(", ")}<br>Unpaid: ${escapeHTML(currentMonth)}`;
+        }
+
+        return `Paid: ${uniquePaidMonths.map(escapeHTML).join(", ")}`;
+    }
+
+    function getPaymentStatus(tenantPayments) {
+        const now = new Date();
+        const thisMonthPayments = tenantPayments.filter(payment => {
+            const date = getPaymentDate(payment);
+            return date && date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+        });
+
+        if (thisMonthPayments.length === 0) {
+            return { label: "Not Paid", className: "unpaid", amount: "" };
+        }
+
+        const latestPayment = thisMonthPayments[thisMonthPayments.length - 1];
+        const type = latestPayment.payType === "partial" ? "Partial" : "Paid";
+        return {
+            label: type,
+            className: latestPayment.payType === "partial" ? "partial" : "paid",
+            amount: latestPayment.amount ? ` - ₱${Number(latestPayment.amount).toLocaleString()}` : ""
+        };
+    }
+
+    function openRoomDetail(room) {
+        if (role === "tenant" && normalizeRoomKey(activeTenant?.room) !== room) {
+            alert("You can only view your assigned room.");
+            return;
+        }
+
+        const roomTenants = tenants[room] || [];
+        const total = maxSlots[room] || roomTenants.length;
+        const available = Math.max(0, total - roomTenants.length);
+        const tenantRows = roomTenants.length
+            ? roomTenants.map(tenant => {
+                const name = typeof tenant === "object" ? tenant.name : tenant;
+                const tenantPaymentList = getTenantPayments(tenant, room);
+                const status = getPaymentStatus(tenantPaymentList);
+                const paidMonths = [...new Set(getPaidMonths(tenantPaymentList))];
+
+                return `
+                    <tr>
+                        <td>${escapeHTML(name)}</td>
+                        <td><span class="payment-status ${status.className}">${status.label}${status.amount}</span></td>
+                        <td>${getPaymentMonthsText(paidMonths)}</td>
+                    </tr>
+                `;
+            }).join("")
+            : `<tr><td colspan="3" class="room-detail-empty">No tenants assigned to this room.</td></tr>`;
+
+        detailPanel.innerHTML = `
+            <div class="room-detail-dialog" role="dialog" aria-modal="true" aria-labelledby="roomDetailTitle">
+            <div class="room-detail-header">
+                <div>
+                    <h3 id="roomDetailTitle">${formatRoomName(room)}</h3>
+                    <p>Capacity: ${total} | Available: ${available} | ₱${Number(rentValues[room] || 0).toLocaleString()}</p>
+                </div>
+                <button type="button" class="room-detail-close" id="closeRoomDetail" aria-label="Close room details">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="room-detail-table-wrap">
+                <table class="room-detail-table">
+                    <thead>
+                        <tr>
+                            <th>Tenant</th>
+                            <th>This Month</th>
+                            <th>Months Paid</th>
+                        </tr>
+                    </thead>
+                    <tbody>${tenantRows}</tbody>
+                </table>
+            </div>
+            </div>
+        `;
+
+        detailPanel.classList.remove("hidden");
+        detailPanel.setAttribute("aria-hidden", "false");
+        document.getElementById("closeRoomDetail")?.addEventListener("click", () => {
+            detailPanel.classList.add("hidden");
+            detailPanel.setAttribute("aria-hidden", "true");
+        });
+        detailPanel.addEventListener("click", event => {
+            if (event.target === detailPanel) {
+                detailPanel.classList.add("hidden");
+                detailPanel.setAttribute("aria-hidden", "true");
+            }
+        });
+    }
+
+    function saveRoomSettings() {
+        const settings = {};
+        Object.keys(maxSlots).forEach(room => {
+            settings[room] = {
+                capacity: maxSlots[room],
+                rent: rentValues[room] || 1200
+            };
+        });
+        localStorage.setItem("roomSettings", JSON.stringify(settings));
+    }
+
+    addRoomBtn?.addEventListener("click", () => {
+        const room = normalizeRoomKey(prompt("Enter room number to add (example: 11):"));
+
+        if (!room) {
+            alert("Please enter a valid room number.");
+            return;
+        }
+
+        if (maxSlots[room]) {
+            alert("That room already exists.");
+            return;
+        }
+
+        const capacity = Number(prompt("Enter room capacity:", "4"));
+        if (!Number.isInteger(capacity) || capacity <= 0) {
+            alert("Please enter a valid room capacity.");
+            return;
+        }
+
+        const rent = Number(prompt("Enter monthly rent:", "1200"));
+        if (!Number.isFinite(rent) || rent <= 0) {
+            alert("Please enter a valid monthly rent.");
+            return;
+        }
+
+        maxSlots[room] = capacity;
+        rentValues[room] = rent;
+        tenants[room] = tenants[room] || [];
+        saveRoomSettings();
+        localStorage.setItem("tenants", JSON.stringify(tenants));
+        window.location.reload();
+    });
+
+    removeRoomBtn?.addEventListener("click", () => {
+        const room = normalizeRoomKey(prompt("Enter room number to remove (example: 11):"));
+
+        if (!room) {
+            alert("Please enter a valid room number.");
+            return;
+        }
+
+        if (!maxSlots[room]) {
+            alert("Room not found.");
+            return;
+        }
+
+        const occupied = tenants[room] && tenants[room].length > 0;
+        const message = occupied
+            ? `${room.replace("room", "Room ")} has tenants. Removing it will also remove those tenant assignments. Continue?`
+            : `Remove ${room.replace("room", "Room ")}?`;
+
+        if (!confirm(message)) return;
+
+        delete maxSlots[room];
+        delete rentValues[room];
+        delete roomSettings[room];
+        delete tenants[room];
+        saveRoomSettings();
+        localStorage.setItem("tenants", JSON.stringify(tenants));
+        window.location.reload();
+    });
+
+    // GENERATE ROOM CARDS
+    let visibleRooms = Object.keys(maxSlots);
+    const tenantRoom = normalizeRoomKey(activeTenant?.room);
+
+    visibleRooms.sort((a, b) => Number(a.replace("room", "")) - Number(b.replace("room", ""))).forEach(room => {
+
+        const total = maxSlots[room];
+        const used = tenants[room] ? tenants[room].length : 0;
+        const available = total - used;
+
+        const roomCard = document.createElement("div");
+        roomCard.classList.add("room-card");
+        const canOpenRoom = role === "admin" || room === tenantRoom;
+
+        if (canOpenRoom) {
+            roomCard.classList.add("clickable-room");
+            roomCard.tabIndex = 0;
+            roomCard.setAttribute("role", "button");
+            roomCard.setAttribute("aria-label", `View ${formatRoomName(room)} tenants and payments`);
+        } else {
+            roomCard.classList.add("locked-room");
+            roomCard.setAttribute("aria-label", `${formatRoomName(room)} is view only`);
+        }
+
+        roomCard.innerHTML = `
+            <div class="room-title">${formatRoomName(room)}</div>
+
+            <div class="room-info-box">
+                Capacity: ${total} | Available: ${available} &nbsp; 
+                ₱${rentValues[room].toLocaleString()}
+            </div>
+
+            <div class="tenant-grid"></div>
+        `;
+
+        const grid = roomCard.querySelector(".tenant-grid");
+        if (!tenants[room]) tenants[room] = [];
+
+        // Add tenants
+        tenants[room].forEach(t => {
+            const name = typeof t === "object" ? t.name : t;
+            const slot = document.createElement("div");
+            slot.classList.add("tenant-slot");
+            slot.innerHTML = `<span class="status-dot"></span>${name}`;
+            grid.appendChild(slot);
+        });
+
+        // Add vacant slots
+        for (let i = 0; i < available; i++) {
+            const slot = document.createElement("div");
+            slot.classList.add("tenant-slot", "vacant");
+            slot.innerHTML = `<span class="status-dot"></span>Vacant`;
+            grid.appendChild(slot);
+        }
+
+        if (canOpenRoom) {
+            roomCard.addEventListener("click", () => openRoomDetail(room));
+            roomCard.addEventListener("keydown", event => {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    openRoomDetail(room);
+                }
+            });
+        }
+
+        container.appendChild(roomCard);
+    });
+
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const role = localStorage.getItem("role"); // "admin" or "tenant"
+
+    // --- TOP BUTTONS ---
+    const addTenantBtn = document.querySelector('a[href="add-tenant.html"]');
+    const removeTenantBtn = document.querySelector('a[href="remove-tenant.html"]');
+    const addRoomBtn = document.getElementById("addRoomBtn");
+    const removeRoomBtn = document.getElementById("removeRoomBtn");
+
+    // --- SIDEBAR MENU ---
+    const reportsBtn = document.querySelector('a[href="reports.html"]');
+    const notifBtn = document.querySelector('a[href="notifications.html"]');
+
+    // If the user is TENANT → hide these
+    if (role === "tenant") {
+        if (addTenantBtn) addTenantBtn.style.display = "none";
+        if (removeTenantBtn) removeTenantBtn.style.display = "none";
+        if (addRoomBtn) addRoomBtn.style.display = "none";
+        if (removeRoomBtn) removeRoomBtn.style.display = "none";
+        if (reportsBtn) reportsBtn.style.display = "none";
+        if (notifBtn) notifBtn.style.display = "none";
+    }
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const role = localStorage.getItem("role") || "tenant";
+    const adminBtn = document.querySelector(".admin-btn");
+
+    if (adminBtn) {
+        if (role === "tenant") {
+            adminBtn.textContent = "Profile";
+            adminBtn.href = "profile.html"; 
+        } else {
+            adminBtn.textContent = "Admin";
+            adminBtn.href = "profile.html"; 
+        }
+    }
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const role = localStorage.getItem("role") || "tenant";
+    if (role === "admin") {
+        const payRentLink = document.querySelector('a[href="pay-rent.html"]');
+        if (payRentLink) {
+            // Keep the icon, just change the text
+            const icon = payRentLink.querySelector("i");
+            payRentLink.textContent = "Tenant Payments";
+            if (icon) {
+                payRentLink.prepend(icon); // Re-add the icon
+            }
+        }
+    }
+});
+</script>
+
+  <script src="assets/js/sidebar-active.js"></script>
+
+</body>
+</html>

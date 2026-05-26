@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />    <link rel="stylesheet" href="assets/css/styles.css"><title>Payment Receipt</title>
+    
+</head>
+<body>
+
+    <div class="receipt-box">
+        <h2>Payment Receipt</h2>
+
+        <div class="info">
+            <p><strong>Tenant Name:</strong> <span id="r-name"></span></p>
+            <p><strong>Room Number:</strong> <span id="r-room"></span></p>
+            <p><strong>Amount Paid:</strong> ₱<span id="r-amount"></span></p>
+
+            <!-- 🔥 ADDED THIS LINE -->
+            <p><strong>Payment Type:</strong> <span id="r-type"></span></p>
+
+            <p><strong>Payment Method:</strong> <span id="r-method"></span></p>
+            <p><strong>Reference ID:</strong> <span id="r-ref"></span></p>
+            <p><strong>Date:</strong> <span id="r-date"></span></p>
+        </div>
+
+        <button class="btn" onclick="window.print()">Print Receipt</button>
+        <a href="pay-rent.html" class="btn">Back</a>
+    </div>
+
+    <script>
+        const url = new URLSearchParams(window.location.search);
+
+        document.getElementById("r-name").textContent = url.get("name");
+        document.getElementById("r-room").textContent = url.get("room");
+        document.getElementById("r-amount").textContent = url.get("amount");
+        document.getElementById("r-method").textContent = url.get("method");
+        document.getElementById("r-ref").textContent = url.get("ref");
+
+        // 🔥 ADDED THIS (payment type)
+        const type = url.get("type");
+        document.getElementById("r-type").textContent =
+            type === "full" ? "Full Payment" :
+            type === "partial" ? "Partial Payment" : "Not specified";
+
+        const today = new Date().toLocaleString();
+        document.getElementById("r-date").textContent = today;
+    </script>
+
+  <script src="assets/js/sidebar-active.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Multi-Tenant BH Payment System — Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+
+<body class="login-page">
+
+    <div class="login-card">
+        <div class="login-side">
+            <div class="brand">
+                <div>
+                    <p class="eyebrow">Multi-Tenant BH Payment System</p>
+                    <h1>Boarding house payments made simple.</h1>
+                </div>
+            </div>
+
+            <p class="hero-copy">
+                Secure login for administrators and tenants with fast payment workflows, clear reporting, and a polished
+                dashboard experience.
+            </p>
+
+            <div class="feature-list">
+                <div><i class="fas fa-shield-alt"></i> Secure access</div>
+                <div><i class="fas fa-wallet"></i> Smooth payment flow</div>
+                <div><i class="fas fa-chart-line"></i> Real-time insights</div>
+            </div>
+        </div>
+
+        <div class="login-box login-form-panel">
+            <a href="index.html" class="back-btn">Back</a>
+            <div class="login-form-card">
+                <div class="login-header">
+                    <h2>Login</h2>
+                    <p>Enter your account details to continue to the boarding house management system.</p>
+                </div>
+
+                <form id="loginForm">
+                    <div class="form-group"></div>
+                    <label>Login As</label>
+                    <select id="loginType" required>
+                        <option value="" disabled selected>Select role</option>
+                        <option value="admin">Admin</option>
+                        <option value="tenant">Tenant</option>
+                    </select>
+
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="email" required placeholder="Enter email">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="password" required placeholder="Enter password">
+                    </div>
+
+                    <button type="submit" class="login-btn">Login</button>
+                    <div class="auth-links">
+                        <p>Need an admin account? <br><a href="admin-signup.html">Register here</a></p>
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            let type = document.getElementById("loginType").value;
+            let email = document.getElementById("email").value.trim();
+            let password = document.getElementById("password").value.trim();
+
+            // ============================
+            // ADMIN LOGIN
+            // ============================
+            if (type === "admin") {
+                const admins = JSON.parse(localStorage.getItem("admins")) || [];
+                let foundAdmin = null;
+
+                // Check hardcoded system owner first
+                if (email === "admin@uep.com" && password === "admin123") {
+                    foundAdmin = { email: "admin@uep.com", name: "System Owner" };
+                } else {
+                    // Check dynamically added admins
+                    for (let a of admins) {
+                        if (a.email === email && a.password === password) {
+                            foundAdmin = a;
+                        }
+                    }
+                }
+
+                if (foundAdmin) {
+                    localStorage.setItem("activeAdmin", JSON.stringify(foundAdmin));
+                    localStorage.setItem("role", "admin");
+                    alert(`Welcome Admin ${foundAdmin.name}!`);
+                    window.location.href = "dashboard.html";
+                } else {
+                    alert("Invalid Admin credentials!");
+                }
+                return;
+            }
+
+            // ============================
+            // TENANT LOGIN
+            // ============================
+            if (type === "tenant") {
+                let tenants = JSON.parse(localStorage.getItem("tenants")) || {};
+                let foundTenant = null;
+
+                // search all rooms
+                for (let room in tenants) {
+                    tenants[room].forEach(t => {
+                        if (t.email === email && t.password === password) {
+                            foundTenant = { ...t, room: room };
+                        }
+                    });
+                }
+
+                if (foundTenant) {
+                    localStorage.setItem("activeTenant", JSON.stringify(foundTenant));
+                    localStorage.setItem("role", "tenant");
+
+                    alert("Login Successful! Welcome Tenant!");
+                    window.location.href = "dashboard.html";
+                } else {
+                    alert("Invalid email or password! Tenant not found.");
+                }
+            }
+
+        });
+    </script>
+
+    <script src="assets/js/sidebar-active.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>UEP BH Payment System — Reports</title>
+
+<!-- Font Awesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">    <link rel="stylesheet" href="assets/css/styles.css"></head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+    <i id="hamburger" class="fas fa-bars"></i>
+    <a class="title-link" href="about.html">
+        <div class="title">
+            <img src="assets/photos/logo.png" alt="UEP Logo">
+            Multi-Tenant Boarding House Payment System
+        </div>
+    </a>
+    <div class="topbar-buttons">
+        <a href="profile.html" class="admin-btn">Admin</a>
+        <a href="logout.html" class="logout-btn">Logout</a>
+    </div>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+        <a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a>
+        <a href="tenant-list.html"><i class="fas fa-user-friends"></i> Tenants</a>
+        <a href="pay-rent.html"><i class="fas fa-money-bill-wave"></i> Tenant Payments</a>
+        <a href="payment-records.html"><i class="fas fa-receipt"></i> Payment Records</a>
+        <a href="reports.html" class="active"><i class="fas fa-file-alt"></i> Reports</a>
+        <a href="notifications.html"><i class="fas fa-bell"></i> Notifications</a>
+        <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+        <a href="calendar.html"><i class="fas fa-calendar"></i> Calendar</a>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="content">
+    <div class="section-title"><i class="fas fa-file-alt"></i> Reports Overview</div>
+
+    <div class="card" style="margin-bottom: 20px;">
+        <h3><i class="fas fa-chart-pie"></i> Quick Metrics</h3>
+        <div class="report-summary" style="display: grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 16px; margin-top: 16px;">
+            <div class="summary-item" style="padding: 16px; background: #fff; border-radius: 12px; box-shadow: rgba(15, 23, 42, 0.08) 0px 1px 4px;">
+                <span>Total Tenants</span>
+                <strong id="reportsTotalTenants">0</strong>
+            </div>
+            <div class="summary-item" style="padding: 16px; background: #fff; border-radius: 12px; box-shadow: rgba(15, 23, 42, 0.08) 0px 1px 4px;">
+                <span>This Month Paid</span>
+                <strong id="reportsPaidThisMonth">0</strong>
+            </div>
+            <div class="summary-item" style="padding: 16px; background: #fff; border-radius: 12px; box-shadow: rgba(15, 23, 42, 0.08) 0px 1px 4px;">
+                <span>Total Collected</span>
+                <strong id="reportsTotalCollected">₱0</strong>
+            </div>
+            <div class="summary-item" style="padding: 16px; background: #fff; border-radius: 12px; box-shadow: rgba(15, 23, 42, 0.08) 0px 1px 4px;">
+                <span>Overdue Accounts</span>
+                <strong id="reportsOverdueCount">0</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="search-box">
+        <input id="searchInput" type="text" placeholder="Search tenant, month, status, or payment...">
+    </div>
+
+    <div class="card">
+        <h3><i class="fas fa-calendar-alt"></i> Monthly Summary</h3>
+        <table class="search-table" id="monthlySummary">
+            <tr><th>Month</th><th>Paid Tenants</th><th>Unpaid Tenants</th><th>Total Collected</th></tr>
+        </table>
+    </div>
+
+    <div class="card">
+        <h3><i class="fas fa-user-check"></i> Tenant Status</h3>
+        <table class="search-table" id="tenantStatus">
+            <tr>
+                <th>Tenant Name</th>
+                <th>Status</th>
+                <th>Last Payment</th>
+            </tr>
+        </table>
+    </div>
+
+    <div class="card">
+        <h3><i class="fas fa-chart-line"></i> Payment Trends</h3>
+        <table class="search-table" id="paymentTrends">
+            <tr><th>Month</th><th>Payments Collected</th></tr>
+        </table>
+    </div>
+
+    <div class="card">
+        <h3><i class="fas fa-exclamation-triangle"></i> Overdue Accounts</h3>
+        <table class="search-table" id="overdueAccounts">
+            <tr><th>Tenant</th><th>Last Payment</th><th>Status</th></tr>
+        </table>
+    </div>
+
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    function getStoredJson(key, fallback) {
+        try {
+            return JSON.parse(localStorage.getItem(key)) || fallback;
+        } catch (error) {
+            return fallback;
+        }
+    }
+
+    function clearReportTable(tableId) {
+        const table = document.getElementById(tableId);
+        if (!table) return null;
+
+        Array.from(table.querySelectorAll("tr")).slice(1).forEach(row => row.remove());
+        return table;
+    }
+
+    function applyReportSearch() {
+        const searchInput = document.getElementById("searchInput");
+        const query = searchInput ? searchInput.value.trim().toLowerCase() : "";
+
+        document.querySelectorAll(".search-table").forEach(table => {
+            const rows = Array.from(table.querySelectorAll("tr")).slice(1);
+
+            rows.forEach(row => {
+                const rowText = row.textContent.toLowerCase();
+                row.style.display = !query || rowText.includes(query) ? "" : "none";
+            });
+        });
+    }
+
+    async function getPaymentRecordsFromPage() {
+        try {
+            const response = await fetch("payment-records.html", { cache: "no-store" });
+            if (!response.ok) return [];
+
+            const html = await response.text();
+            const doc = new DOMParser().parseFromString(html, "text/html");
+            return Array.from(doc.querySelectorAll("tbody tr")).map(row => {
+                const cells = row.querySelectorAll("td");
+                const name = normalizeText(cells[0]?.querySelector("span")?.textContent || cells[0]?.textContent);
+                const amount = normalizeText(cells[2]?.textContent).replace(/[^\d.]/g, "");
+                const status = normalizeText(cells[3]?.textContent).toLowerCase();
+                const date = normalizeText(cells[4]?.textContent);
+
+                return {
+                    name,
+                    amount: parseFloat(amount) || 0,
+                    status,
+                    date: date === "—" || date === "-" ? "" : date,
+                };
+            }).filter(payment => payment.name && payment.status === "paid" && payment.date);
+        } catch (error) {
+            return [];
+        }
+    }
+
+    async function renderReports() {
+    const tenants = getStoredJson("tenants", {});
+    const payments = [
+        ...await getPaymentRecordsFromPage(),
+        ...getStoredJson("tenantPayments", []),
+    ];
+    const monthlySummary = clearReportTable("monthlySummary");
+    const tenantStatus = clearReportTable("tenantStatus");
+    const paymentTrends = clearReportTable("paymentTrends");
+    const overdueTable = clearReportTable("overdueAccounts");
+
+    function normalizeText(value) {
+        return (value || "").toString().trim();
+    }
+
+    function getTenantName(tenant) {
+        if (typeof tenant === "string") return normalizeText(tenant);
+        if (!tenant || typeof tenant !== "object") return "";
+        return normalizeText(tenant.name || tenant.tenantName || tenant.fullName || tenant.username);
+    }
+
+    function getTenantEmail(tenant) {
+        if (!tenant || typeof tenant !== "object") return "";
+        return normalizeText(tenant.email);
+    }
+
+    function addTenantToList(tenant, room) {
+        const name = getTenantName(tenant);
+        if (!name) return;
+
+        tenantList.push({
+            name,
+            email: getTenantEmail(tenant),
+            room: normalizeText(room),
+        });
+    }
+
+    const tenantList = [];
+    if (Array.isArray(tenants)) {
+        tenants.forEach(tenant => {
+            const room = tenant && typeof tenant === "object" ? tenant.room : "";
+            addTenantToList(tenant, room);
+        });
+    } else {
+        Object.keys(tenants).forEach(room => {
+            const roomTenants = Array.isArray(tenants[room]) ? tenants[room] : [];
+            roomTenants.forEach(tenant => addTenantToList(tenant, room));
+        });
+    }
+
+    const totalTenants = tenantList.length;
+    const paymentMap = {};
+    const monthMap = {};
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    payments.forEach(payment => {
+        const paymentDate = new Date(payment.date || payment.paymentDate || payment.createdAt || "");
+        if (isNaN(paymentDate)) return;
+
+        const paymentName = normalizeText(payment.name || payment.tenantName).toLowerCase();
+        const paymentEmail = normalizeText(payment.email).toLowerCase();
+        const paymentRoom = normalizeText(payment.room).toLowerCase();
+        const matchedTenant = tenantList.find(tenant => {
+            const tenantName = tenant.name.toLowerCase();
+            const tenantEmail = tenant.email.toLowerCase();
+            const tenantRoom = tenant.room.toLowerCase();
+
+            if (tenantEmail && paymentEmail) return tenantEmail === paymentEmail;
+            if (!paymentName || tenantName !== paymentName) return false;
+            if (paymentRoom && tenantRoom) return paymentRoom === tenantRoom;
+            return true;
+        });
+        if (!matchedTenant) return;
+
+        const monthKey = paymentDate.toLocaleString("default", { month: "long", year: "numeric" });
+        const payerKey = matchedTenant.email
+            ? `email:${matchedTenant.email.toLowerCase()}`
+            : `tenant:${matchedTenant.room.toLowerCase()}:${matchedTenant.name.toLowerCase()}`;
+
+        if (!monthMap[monthKey]) {
+            monthMap[monthKey] = { uniquePayers: new Set(), collected: 0 };
+        }
+        if (payerKey) monthMap[monthKey].uniquePayers.add(payerKey);
+        monthMap[monthKey].collected += parseFloat(payment.amount) || 0;
+
+        if (payerKey) {
+            if (!paymentMap[payerKey]) paymentMap[payerKey] = [];
+            paymentMap[payerKey].push(paymentDate);
+        }
+    });
+
+    const monthRows = Object.entries(monthMap)
+        .map(([month, data]) => ({
+            month,
+            paid: data.uniquePayers.size,
+            collected: data.collected,
+            date: new Date(month),
+        }))
+        .sort((a, b) => a.date - b.date);
+
+    monthRows.forEach(row => {
+        const unpaid = Math.max(0, totalTenants - row.paid);
+        monthlySummary.innerHTML += `<tr><td>${row.month}</td><td>${row.paid}</td><td>${unpaid}</td><td>₱${row.collected.toLocaleString()}</td></tr>`;
+    });
+
+    // Normalize payments for exact tenant matching.
+    const paymentsNorm = payments.map(p => {
+        const d = new Date(p.date || p.paymentDate || p.createdAt || "");
+        return {
+            date: isNaN(d) ? null : d,
+            nameLower: (p.name || "").toString().trim().toLowerCase(),
+            emailLower: (p.email || "").toString().trim().toLowerCase(),
+            roomLower: (p.room || "").toString().trim().toLowerCase(),
+            amount: parseFloat(p.amount) || 0
+        };
+    });
+
+    function paymentBelongsToTenant(payment, tenant) {
+        if (!payment.date) return false;
+
+        if (tenant.email && payment.emailLower) {
+            return payment.emailLower === tenant.email.toLowerCase().trim();
+        }
+
+        if (!payment.nameLower || payment.nameLower !== tenant.name.toLowerCase().trim()) {
+            return false;
+        }
+
+        if (payment.roomLower && tenant.room) {
+            return payment.roomLower === tenant.room.toLowerCase().trim();
+        }
+
+        return true;
+    }
+
+    let overdueCount = 0;
+    const overdueAccounts = [];
+    let paidThisMonthCount = 0;
+    const nowDate = new Date();
+
+    tenantList.forEach(tenant => {
+        const matches = paymentsNorm.filter(payment => paymentBelongsToTenant(payment, tenant));
+
+        const lastPaymentDate = matches.length ? new Date(Math.max(...matches.map(m => m.date.valueOf()))) : null;
+        const paidThisMonth = matches.length > 0 && matches.some(m => m.date && m.date.getMonth() === currentMonth && m.date.getFullYear() === currentYear);
+
+        if (paidThisMonth) paidThisMonthCount++;
+
+        const status = paidThisMonth ? "Paid" : "Unpaid";
+        const statusColor = paidThisMonth ? "green" : "red";
+        const lastDateText = lastPaymentDate ? lastPaymentDate.toLocaleDateString() : "No payment yet";
+
+        tenantStatus.innerHTML += `<tr><td>${tenant.name}</td><td style="color:${statusColor};font-weight:bold;">${status}</td><td>${lastDateText}</td></tr>`;
+
+        if (!paidThisMonth) {
+            overdueCount++;
+            let daysOverdue = null;
+            if (lastPaymentDate) {
+                const diffMs = nowDate - lastPaymentDate;
+                daysOverdue = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            }
+            overdueAccounts.push({ name: tenant.name, lastPayment: lastDateText, status: daysOverdue === null ? "No payment yet" : `${daysOverdue} day(s) overdue` });
+        }
+    });
+
+    // Payment Trends
+    monthRows.forEach(row => {
+        paymentTrends.innerHTML += `<tr><td>${row.month}</td><td>₱${row.collected.toLocaleString()}</td></tr>`;
+    });
+
+    // Overdue Accounts table
+    if (overdueAccounts.length === 0) {
+        overdueTable.innerHTML += `<tr><td colspan="3" style="text-align:center; padding: 18px; color: #6b7280;">No overdue accounts</td></tr>`;
+    } else {
+        overdueAccounts.forEach(item => {
+            overdueTable.innerHTML += `<tr><td>${item.name}</td><td>${item.lastPayment}</td><td style="color:red;font-weight:bold;">${item.status}</td></tr>`;
+        });
+    }
+
+    document.getElementById("reportsTotalTenants").textContent = totalTenants;
+    document.getElementById("reportsPaidThisMonth").textContent = paidThisMonthCount;
+    document.getElementById("reportsTotalCollected").textContent = `₱${monthRows.reduce((sum, row) => sum + row.collected, 0).toLocaleString()}`;
+    document.getElementById("reportsOverdueCount").textContent = overdueCount;
+    applyReportSearch();
+    }
+
+    renderReports();
+    window.addEventListener("pageshow", renderReports);
+    window.addEventListener("storage", event => {
+        if (event.key === "tenants" || event.key === "tenantPayments") {
+            renderReports();
+        }
+    });
+
+    const ham = document.getElementById("hamburger");
+    const side = document.getElementById("sidebar");
+    if (ham && side) {
+        ham.addEventListener("click", () => {
+            side.classList.toggle("show");
+        });
+    }
+
+    const role = localStorage.getItem("role");
+    const reportsBtn = document.querySelector('a[href="reports.html"]');
+    const notifBtn = document.querySelector('a[href="notifications.html"]');
+    if (role === "tenant") {
+        if (reportsBtn) reportsBtn.style.display = "none";
+        if (notifBtn) notifBtn.style.display = "none";
+    }
+
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) {
+        searchInput.addEventListener("input", applyReportSearch);
+    }
+});
+</script>
+<script src="assets/js/sidebar-active.js"></script>
+</body>
+</html>

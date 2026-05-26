@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Remove Tenant — UEP BH Payment System</title>
+
+<!-- FONT AWESOME ICONS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">    <link rel="stylesheet" href="assets/css/styles.css"></head>
+<body>
+
+<div class="topbar">
+    <i id="hamburger" class="fas fa-bars"></i>
+
+    <a href="about.html" class="title-link">
+        <div class="title">
+            <img src="assets/photos/logo.png">
+            Multi-Tenant Boarding House Payment System
+        </div>
+    </a>
+
+    <div class="top-buttons">
+        <a href="tenant-list.html" class="back-btn admin-btn">Back</a>
+    </div>
+</div>
+
+<div class="layout">
+
+    <div class="nav" id="sidebar">
+        <a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a>
+        <a href="tenant-list.html"><i class="fas fa-user-friends"></i> Tenants</a>
+        <a href="pay-rent.html"><i class="fas fa-money-bill-wave"></i> Pay Rent</a>
+        <a href="payment-records.html"><i class="fas fa-receipt"></i> Payment Records</a>
+        <a href="reports.html"><i class="fas fa-file-alt"></i> Reports</a>
+        <a href="notifications.html"><i class="fas fa-bell"></i> Notifications</a>
+        <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+        <a href="calendar.html"><i class="fas fa-calendar"></i> Calendar</a>
+    </div>
+
+    <div class="main">
+        <div class="section-title"><i class="fas fa-user-minus"></i> Remove Tenant</div>
+
+        <div class="form-box">
+
+            <label>Select Room</label>
+            <select id="roomSelect">
+                <option value="" disabled selected>Select Room</option>
+                <option value="room1">Room 1</option>
+                <option value="room2">Room 2</option>
+                <option value="room3">Room 3</option>
+                <option value="room4">Room 4</option>
+                <option value="room5">Room 5</option>
+                <option value="room6">Room 6</option>
+                <option value="room7">Room 7</option>
+                <option value="room8">Room 8</option>
+                <option value="room9">Room 9</option>
+                <option value="room10">Room 10</option>
+            </select>
+
+            <label>Select Tenant</label>
+            <select id="tenantSelect">
+                <option value="" disabled selected>Select Tenant</option>
+            </select>
+
+            <button onclick="removeTenant()">Remove Tenant</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Load tenants into dropdown
+function loadTenants(room) {
+    const tenantSelect = document.getElementById("tenantSelect");
+    tenantSelect.innerHTML = '<option value="" disabled selected>Select Tenant</option>';
+
+    const tenants = JSON.parse(localStorage.getItem("tenants")) || {};
+
+    if (!tenants[room] || tenants[room].length === 0) {
+        tenantSelect.innerHTML += '<option disabled>No tenants in this room</option>';
+        return;
+    }
+
+    tenants[room].forEach(t => {
+        const name = typeof t === "object" ? t.name : t;
+        tenantSelect.innerHTML += `<option value="${name}">${name}</option>`;
+    });
+}
+
+document.getElementById("roomSelect").addEventListener("change", () => {
+    loadTenants(document.getElementById("roomSelect").value);
+});
+
+// Remove tenant from localStorage
+function removeTenant() {
+    const room = document.getElementById("roomSelect").value;
+    const selectedName = document.getElementById("tenantSelect").value;
+
+    if (!room || !selectedName) {
+        alert("Please select a room and a tenant.");
+        return;
+    }
+
+    let tenants = JSON.parse(localStorage.getItem("tenants")) || {};
+    if (!tenants[room]) return;
+
+    tenants[room] = tenants[room].filter(t => {
+        const name = typeof t === "object" ? t.name : t;
+        return name !== selectedName;
+    });
+
+    localStorage.setItem("tenants", JSON.stringify(tenants));
+
+    alert(`Tenant "${selectedName}" removed successfully.`);
+    loadTenants(room);
+}
+</script>
+
+<!-- SIDEBAR TOGGLE -->
+<script>
+const ham = document.getElementById("hamburger");
+const side = document.getElementById("sidebar");
+
+ham.addEventListener("click", () => {
+    side.classList.toggle("show");
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const role = localStorage.getItem("role") || "tenant";
+    if (role === "admin") {
+        const payRentLink = document.querySelector('a[href="pay-rent.html"]');
+        if (payRentLink) {
+            // Keep the icon, just change the text
+            const icon = payRentLink.querySelector("i");
+            payRentLink.textContent = "Tenant Payments";
+            if (icon) {
+                payRentLink.prepend(icon); // Re-add the icon
+            }
+        }
+    }
+});
+</script>
+  <script src="assets/js/sidebar-active.js"></script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Signup — UEP BH Payment System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="signup-page">
+
+    <div class="signup-container">
+        <!-- Left Panel -->
+        <div class="signup-left">
+            <div class="signup-branding">
+                <div class="brand">
+                     <img src="assets/photos/logo-login.png" alt="UEP logo">
+                    <h2>Multi-Tenant BH Payment System</h2>
+                </div>
+                <h1>Join the Future of Boarding House Management</h1>
+                <p class="signup-description">Create your administrator account and start managing your property with our modern, secure platform. Track payments, manage tenants, and generate reports effortlessly.</p>
+                
+                <div class="signup-benefits">
+                    <div class="benefit-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <div>
+                            <h4>Secure & Reliable</h4>
+                            <p>Enterprise-grade security for your data</p>
+                        </div>
+                    </div>
+                    <div class="benefit-item">
+                        <i class="fas fa-chart-line"></i>
+                        <div>
+                            <h4>Real-time Analytics</h4>
+                            <p>Track payments and generate insights</p>
+                        </div>
+                    </div>
+                    <div class="benefit-item">
+                        <i class="fas fa-users"></i>
+                        <div>
+                            <h4>Tenant Management</h4>
+                            <p>Efficiently manage your tenants</p>
+                        </div>
+                    </div>
+                    <div class="benefit-item">
+                        <i class="fas fa-mobile-alt"></i>
+                        <div>
+                            <h4>Mobile Access</h4>
+                            <p>Manage from anywhere, anytime</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="signup-right">
+            <a href="index.html" class="back-btn">Back</a>
+            <div class="signup-form-card">
+                <div class="signup-header">
+                    <h2>Create Admin Account</h2>
+                    <p>Register your boarding house and start managing payments today</p>
+                </div>
+
+                <form id="adminSignupForm">
+                    <div class="form-group">
+                        <label for="adminName">Full Name</label>
+                        <input type="text" id="adminName" required placeholder="Enter your full name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="adminEmail">Email Address</label>
+                        <input type="email" id="adminEmail" required placeholder="Enter your email">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="adminPassword">Password</label>
+                        <div class="password-input">
+                            <input type="password" id="adminPassword" required placeholder="Create a password">
+                            <button type="button" class="password-toggle" onclick="togglePassword()">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bhName">Boarding House Name</label>
+                        <input type="text" id="bhName" required placeholder="Enter boarding house name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bhAddress">Boarding House Address</label>
+                        <input id="bhAddress" required placeholder="Enter boarding house address"></input>
+                    </div>
+
+                    <button type="submit" class="signup-btn">Create Admin Account</button>
+                </form>
+
+                <div class="auth-links">
+                    <p>Already have an account? <a href="login.html">Login here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('adminPassword');
+            const toggleBtn = document.querySelector('.password-toggle i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleBtn.className = 'fas fa-eye-slash';
+            } else {
+                passwordInput.type = 'password';
+                toggleBtn.className = 'fas fa-eye';
+            }
+        }
+
+        document.getElementById('adminSignupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('adminName').value.trim();
+            const email = document.getElementById('adminEmail').value.trim();
+            const password = document.getElementById('adminPassword').value.trim();
+            const bhName = document.getElementById('bhName').value.trim();
+            const bhAddress = document.getElementById('bhAddress').value.trim();
+
+            if (!name || !email || !password || !bhName || !bhAddress) {
+                alert('Please complete all fields.');
+                return;
+            }
+
+            const admins = JSON.parse(localStorage.getItem('admins')) || [];
+            if (admins.some(a => a.email.toLowerCase() === email.toLowerCase())) {
+                alert('An admin with that email already exists.');
+                return;
+            }
+
+            const admin = {
+                name,
+                email,
+                password,
+                bhName,
+                bhAddress
+            };
+
+            admins.push(admin);
+            localStorage.setItem('admins', JSON.stringify(admins));
+            localStorage.setItem('activeAdmin', JSON.stringify(admin));
+            localStorage.setItem('role', 'admin');
+            localStorage.setItem('bhInfo', JSON.stringify({ name: bhName, address: bhAddress }));
+
+            alert('Admin account created successfully. Redirecting to dashboard.');
+            window.location.href = 'dashboard.html';
+        });
+    </script>
+
+</body>
+</html>

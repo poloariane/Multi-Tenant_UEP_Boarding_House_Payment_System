@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calendar — UEP BH Payment System</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">    <link rel="stylesheet" href="assets/css/styles.css"></head>
+<body>
+
+<!-- ====== Top Bar ====== -->
+<!-- ADDED: TOPBAR & SIDEBAR EXACT COPY FROM tenant-list.html -->
+<div class="topbar">
+
+    <i id="hamburger" class="fas fa-bars"></i>
+
+    <a href="about.html" class="title-link">
+        <div class="title">
+            <img src="assets/photos/logo.png">
+            Multi-Tenant Boarding House Payment System
+        </div>
+    </a>
+
+    <div class="topbar-buttons">
+            <a href="profile.html" class="admin-btn">Admin</a>
+            <a href="logout.html" class="logout-btn">Logout</a>
+        </div>
+</div>
+
+<div class="layout">
+    <div class="nav" id="sidebar">
+        <a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a>
+        <a href="tenant-list.html"><i class="fas fa-user-friends"></i> Tenants</a>
+        <a href="pay-rent.html"><i class="fas fa-money-bill-wave"></i> Pay Rent</a>
+        <a href="payment-records.html"><i class="fas fa-receipt"></i> Payment Records</a>
+        <a href="reports.html"><i class="fas fa-file-alt"></i> Reports</a>
+        <a href="notifications.html"><i class="fas fa-bell"></i> Notifications</a>
+        <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+        <a href="calendar.html"><i class="fas fa-calendar"></i> Calendar</a>
+    </div>
+
+
+    <!-- Main Content -->
+    <div class="main">
+        <div class="section-title"><i class="fas fa-calendar"></i> Calendar</div>
+
+        <div class="calendar-container">
+            <div class="calendar-header">
+                <button id="prevMonth" class="secondary-btn">Previous</button>
+                <h2 id="monthYear"></h2>
+                <button id="nextMonth" class="secondary-btn">Next</button>
+            </div>
+
+            <div class="calendar-grid" id="calendarGrid">
+                <div class="day-name">Sun</div>
+                <div class="day-name">Mon</div>
+                <div class="day-name">Tue</div>
+                <div class="day-name">Wed</div>
+                <div class="day-name">Thu</div>
+                <div class="day-name">Fri</div>
+                <div class="day-name">Sat</div>
+            </div>
+            <div class="calendar-legend">
+    <div><span class="legend-box due"></span> Red = Rent Due Week</div>
+    <div><span class="legend-box today"></span> Blue = Today</div>
+</div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+let currentDate = new Date();
+
+function renderCalendar() {
+    const month = currentDate.getMonth();
+    const year = currentDate.getFullYear();
+
+    document.getElementById("monthYear").textContent =
+        currentDate.toLocaleString("default", { month: "long" }) + " " + year;
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    const calendarGrid = document.getElementById("calendarGrid");
+
+    // Remove old day boxes
+    const oldBoxes = calendarGrid.querySelectorAll(".day-box");
+    oldBoxes.forEach(box => box.remove());
+
+    // Add blank boxes for offset
+    for (let i = 0; i < firstDay; i++) {
+        const blank = document.createElement("div");
+        blank.classList.add("day-box", "empty-box");
+        calendarGrid.appendChild(blank);
+    }
+
+    // Today's date
+    const today = new Date();
+    const isSameMonth = today.getMonth() === month && today.getFullYear() === year;
+
+    // Add days
+    for (let day = 1; day <= daysInMonth; day++) {
+        const box = document.createElement("div");
+        box.classList.add("day-box");
+        box.textContent = day;
+
+        // Highlight last week of the month (Rent Due)
+        if (day > daysInMonth - 7) {
+            box.classList.add("due");
+            box.title = "Rent Due Week";
+        }
+
+        // Highlight current day
+        if (isSameMonth && day === today.getDate()) {
+            box.classList.add("today");
+            box.title = "Today";
+        }
+
+        calendarGrid.appendChild(box);
+    }
+}
+
+document.getElementById("prevMonth").addEventListener("click", () => {
+    currentDate.setMonth(currentDate.getMonth() - 1);
+    renderCalendar();
+});
+
+document.getElementById("nextMonth").addEventListener("click", () => {
+    currentDate.setMonth(currentDate.getMonth() + 1);
+    renderCalendar();
+});
+
+renderCalendar();
+
+</script>
+
+<script>
+// ADD ICONS TO SETTINGS TITLES (NO EXISTING CODE IS MODIFIED)
+document.addEventListener("DOMContentLoaded", () => {
+    const sections = document.querySelectorAll(".section h3");
+
+    const icons = [
+        '<i class="fas fa-user-cog"></i>',      // Account Settings
+        '<i class="fas fa-sliders-h"></i>',     // Preferences
+        '<i class="fas fa-money-bill-wave"></i>', // Payment Settings
+        '<i class="fas fa-users"></i>',         // Tenant Management
+        '<i class="fas fa-shield-alt"></i>',    // Security
+        '<i class="fas fa-home"></i>'           // Boarding House Details
+    ];
+
+    sections.forEach((sec, i) => {
+        sec.innerHTML = icons[i] + " " + sec.innerHTML;
+    });
+});
+</script>
+
+
+<script>
+// Role-based menu display
+document.addEventListener("DOMContentLoaded", () => {
+    const role = localStorage.getItem("role"); // "admin" or "tenant"
+
+    const reportsBtn = document.querySelector('a[href="reports.html"]');
+    const notifBtn = document.querySelector('a[href="notifications.html"]');
+   
+
+    if (role === "tenant") {
+        if (reportsBtn) reportsBtn.style.display = "none";
+        if (notifBtn) notifBtn.style.display = "none";
+        if (settingsBtn) settingsBtn.style.display = "none";
+
+        // Optional: hide Admin button on topbar for tenant
+        const adminBtn = document.querySelector(".top-buttons a.back-btn");
+        if (adminBtn) adminBtn.style.display = "none";
+    }
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const role = localStorage.getItem("role") || "tenant";
+    const adminBtn = document.querySelector(".admin-btn");
+
+    if (adminBtn) {
+        if (role === "tenant") {
+            adminBtn.textContent = "Profile";
+            adminBtn.href = "profile.html"; 
+        } else {
+            adminBtn.textContent = "Admin";
+            adminBtn.href = "profile.html"; 
+        }
+    }
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const role = localStorage.getItem("role") || "tenant";
+    if (role === "admin") {
+        const payRentLink = document.querySelector('a[href="pay-rent.html"]');
+        if (payRentLink) {
+            // Keep the icon, just change the text
+            const icon = payRentLink.querySelector("i");
+            payRentLink.textContent = "Tenant Payments";
+            if (icon) {
+                payRentLink.prepend(icon); // Re-add the icon
+            }
+        }
+    }
+});
+</script>
+
+  <script src="assets/js/sidebar-active.js"></script>
+
+</body>
+</html>

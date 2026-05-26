@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenant History — UEP BH Payment System</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">    <link rel="stylesheet" href="assets/css/styles.css"></head>
+
+<body>
+
+    
+    <!-- TOP BAR (copied exactly from dashboard) -->
+<div class="topbar">
+
+    <!-- HAMBURGER BUTTON (added from Dashboard) -->
+    <i id="hamburger" class="fas fa-bars"></i>
+
+    <a href="about.html" class="title-link">
+        <div class="title">
+                <img src="assets/photos/logo.png">
+                Multi-Tenant Boarding House Payment System
+            </div>
+    </a>
+
+    <div class="topbar-buttons">
+        
+        <a href="payment-records.html" class="back-btn admin-btn">Back</a>
+    
+
+    </div>
+</div>
+
+<div class="layout">
+
+    <!-- UPDATED SIDEBAR -->
+    <div class="nav" id="sidebar">
+        <a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a>
+        <a href="tenant-list.html"><i class="fas fa-user-friends"></i> Tenants</a>
+        <a href="pay-rent.html"><i class="fas fa-money-bill-wave"></i> Pay Rent</a>
+        <a href="payment-records.html"><i class="fas fa-receipt"></i> Payment Records</a>
+        <a href="reports.html"><i class="fas fa-file-alt"></i> Reports</a>
+        <a href="notifications.html"><i class="fas fa-bell"></i> Notifications</a>
+        <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+        <a href="calendar.html"><i class="fas fa-calendar"></i> Calendar</a>
+    </div>
+
+    <!-- MAIN CONTENT (unchanged - your table & history stay same) -->
+    <div class="main">
+
+
+            
+            <!-- New two-column structure: left column for tenant list, right for history -->
+            <div class="history-container">
+                <div class="history-left">
+                    <div class="tenant-list">
+                        <h3>Tenants</h3>
+
+                        <!-- Dynamically populated by initTenantList() -->
+                        <div id="tenant-btn-container"></div>
+                    </div>
+                </div>
+
+                <div class="history-right" style="flex:1;">
+                    <div class="history-panel" id="historyPanel">
+                        <h2>Select a tenant to view payment history.</h2>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+   
+    <script>
+        // ── Utilities ─────────────────────────────────────────────────────────
+        function getAllTenants() {
+            const tenants = JSON.parse(localStorage.getItem("tenants") || "{}");
+            const names = [];
+            Object.keys(tenants)
+                .sort((a, b) => Number(a.replace("room", "")) - Number(b.replace("room", "")))
+                .forEach(room => {
+                    (tenants[room] || []).forEach(t => {
+                        names.push(typeof t === "object" ? t.name : t);
+                    });
+                });
+            return names;
+        }
+
+        // Resolve a month string (e.g. "January 2025") to a payment object, or null
+        function getPaymentForMonth(payments, monthLabel, normTenant) {
+            return payments.find(p => {
+                if (!p.name) return false;
+                if (p.name.trim().toLowerCase() !== normTenant) return false;
+                const d = new Date(p.date || p.dateString || 0);
+                if (isNaN(d)) return false;
+                return d.toLocaleDateString("en-US", { month: "long", year: "numeric" }) === monthLabel;
+            });
+        }
+
+        // ── Build dynamic tenant sidebar ────────────────────────────────────
+        function initTenantList() {
+            const container = document.getElementById("tenant-btn-container");
+            if (!container) return;
+            container.innerHTML = "";
+
+            const role = localStorage.getItem("role") || "tenant";
+            const activeTenant = JSON.parse(localStorage.getItem("activeTenant") || "null");
+            let names = getAllTenants();
+
+            // Tenant: only show own history
+            if (role === "tenant" && activeTenant?.name) {
+                names = [activeTenant.name.trim()];
+            }
+
+            if (names.length === 0) {
+                container.innerHTML = "<p style='color:var(--text-muted);font-size:0.9rem;'>No tenants found.</p>";
+                return;
+            }
+
+            names.forEach(name => {
+                const btn = document.createElement("button");
+                btn.className = "tenant-btn";
+                btn.textContent = name;
+                btn.addEventListener("click", () => showHistory(name));
+                container.appendChild(btn);
+            });
+        }
+
+        // ── Month-based history builder ─────────────────────────────────────
+        function buildHistory(selectedName) {
+            const payments = JSON.parse(localStorage.getItem("tenantPayments") || "[]");
+            const normTenant = selectedName.trim().toLowerCase();
+            const tenantPayments = payments.filter(p => p.name && p.name.trim().toLowerCase() === normTenant);
+
+            // Determine month range: expand left from next month, cap at 12 total months
+            const now = new Date();
+            const thisMonthLabel = now.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+            const nextDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+            const nextMonthLabel = nextDate.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+
+            // Collect all year-month keys that have at least one payment
+            const paidMonthLabels = new Set();
+            tenantPayments.forEach(p => {
+                const d = new Date(p.date || p.dateString || 0);
+                if (!isNaN(d)) paidMonthLabels.add(d.toLocaleDateString("en-US", { month: "long", year: "numeric" }));
+            });
+
+            // Earliest paid month date (used to compute start of range)
+            const paidMonthDates = [...paidMonthLabels].map(label => {
+                const d = new Date(label);
+                return isNaN(d) ? null : d;
+            }).filter(Boolean);
+
+            // Range: start = max of (nextMonth - 11 mo, earliest-paid-month), end = nextMonth
+            const minStartDate = new Date(nextDate.getFullYear(), nextDate.getMonth() - 11, 1);
+            let rangeStart = paidMonthDates.length ? paidMonthDates.reduce((earliest, d) => d < earliest ? d : earliest) : minStartDate;
+            if (rangeStart < minStartDate) rangeStart = minStartDate;
+            const rangeEnd = nextDate;
+
+            // Build ordered month label list
+            const monthLabels = [];
+            let cursor = new Date(rangeStart.getFullYear(), rangeStart.getMonth(), 1);
+            while (cursor <= rangeEnd) {
+                monthLabels.push(cursor.toLocaleDateString("en-US", { month: "long", year: "numeric" }));
+                cursor = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1);
+            }
+
+            // Render
+            let html = `<div class="tenant-name">${selectedName}</div>`;
+
+            if (tenantPayments.length === 0 && monthLabels.length <= 2) {
+                html += `
+                    <div class="history-card">
+                        <p>No payment history found yet.</p>
+                        <p>Please pay rent first in the <strong>Pay Rent</strong> page.</p>
+                    </div>`;
+                return html;
+            }
+
+            monthLabels.forEach(monthLabel => {
+                const isPaid = paidMonthLabels.has(monthLabel);
+                const isCurrent = monthLabel === thisMonthLabel;
+
+                if (isPaid) {
+                    // Gather all payments in this month
+                    const monthPays = tenantPayments.filter(p => {
+                        const d = new Date(p.date || p.dateString || 0);
+                        return !isNaN(d) && d.toLocaleDateString("en-US", { month: "long", year: "numeric" }) === monthLabel;
+                    }).sort((a, b) => {
+                        const ad = new Date(a.date || a.dateString || 0);
+                        const bd = new Date(b.date || b.dateString || 0);
+                        return bd - ad;
+                    });
+
+                    const badge = isCurrent ? ' <span class="paid">(Current)</span>' : '';
+                    html += `<div class="history-card">`;
+                    html += `<p><strong>${monthLabel}</strong>${badge}</p>`;
+                    monthPays.forEach(pay => {
+                        const typeLabel = pay.payType === "partial" ? "Partial Payment" : "Full Payment";
+                        html += `
+                        <p>Amount: ₱${pay.amount}</p>
+                        <p>Room: ${pay.room || "—"}</p>
+                        <p>Payment Type: ${typeLabel}</p>
+                        <p>Payment Method: ${pay.method || "—"}</p>
+                        <p>Status: <span class="paid">Paid</span></p>`;
+                    });
+                    html += `</div>`;
+                } else {
+                    // Unpaid month
+                    const outBadge = monthLabel === nextMonthLabel
+                        ? ' <span class="unpaid">(Upcoming)</span>'
+                        : isCurrent ? ' <span class="unpaid">(Current)</span>' : '';
+                    html += `
+                    <div class="history-card">
+                        <p><strong>${monthLabel}</strong>${outBadge}</p>
+                        <p>Status: <span class="unpaid">Unpaid</span></p>
+                        <p style="color:var(--text-muted)">No payment recorded for this month.</p>
+                    </div>`;
+                }
+            });
+
+            return html;
+        }
+
+        // ── showHistory entry point ──────────────────────────────────────────
+        function showHistory(idOrName) {
+            // idOrName is always a tenant name string now (no tN IDs from DOM)
+            const name = String(idOrName || "").trim();
+            if (!name) return;
+            document.getElementById("historyPanel").innerHTML = buildHistory(name);
+        }
+
+        // ── Initialise on page load ─────────────────────────────────────────
+        document.addEventListener("DOMContentLoaded", () => {
+            // Populate the tenant sidebar
+            initTenantList();
+
+            // Attach click → highlight then load history
+            document.querySelectorAll(".tenant-btn").forEach(btn => {
+                btn.addEventListener("click", function () {
+                    document.querySelectorAll(".tenant-btn").forEach(b => b.classList.remove("active"));
+                    this.classList.add("active");
+                    showHistory(this.textContent.trim());
+                });
+            });
+
+            // Auto-select from ?name= param (from payment-records)
+            const params = new URLSearchParams(window.location.search);
+            const nameParam = params.get("name");
+            if (nameParam) {
+                const target = decodeURIComponent(nameParam).trim();
+                const allBtns = Array.from(document.querySelectorAll(".tenant-btn"));
+                const found = allBtns.find(b => b.textContent.trim().toLowerCase() === target.toLowerCase());
+                if (found) {
+                    showHistory(found.textContent.trim());
+                    found.classList.add("active");
+                }
+            }
+            // If no ?name= param and no tenant was selected, the default
+            // <h2>Select a tenant to view payment history.</h2> stays visible.
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const role = localStorage.getItem("role");
+            const reportsBtn = document.getElementById("reportsMenu");
+            const notifBtn = document.getElementById("notifMenu");
+            const settingsBtn = document.getElementById("settingsMenu");
+
+            if (role === "tenant") {
+                if (reportsBtn) reportsBtn.style.display = "none";
+                if (notifBtn) notifBtn.style.display = "none";
+                if (settingsBtn) settingsBtn.style.display = "none";
+
+                const adminBtn = document.querySelector(".top-buttons a.back-btn");
+                if (adminBtn) adminBtn.style.display = "none";
+            }
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const role = localStorage.getItem("role"); // "admin" or "tenant"
+
+            // --- SIDEBAR MENU ---
+            const reportsBtn = document.querySelector('a[href="reports.html"]');
+            const notifBtn = document.querySelector('a[href="notifications.html"]');
+
+            // If tenant login → HIDE these menus
+            if (role === "tenant") {
+                if (reportsBtn) reportsBtn.style.display = "none";
+                if (notifBtn) notifBtn.style.display = "none";
+            }
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const role = localStorage.getItem("role") || "tenant";
+            if (role === "admin") {
+                const payRentLink = document.querySelector('a[href="pay-rent.html"]');
+                if (payRentLink) {
+                    // Keep the icon, just change the text
+                    const icon = payRentLink.querySelector("i");
+                    payRentLink.textContent = "Tenant Payments";
+                    if (icon) {
+                        payRentLink.prepend(icon); // Re-add the icon
+                    }
+                }
+            }
+        });
+    </script>
+
+    <script src="assets/js/sidebar-active.js"></script>
+</body>
+</html>
