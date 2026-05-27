@@ -89,12 +89,13 @@
 
                 // Check hardcoded system owner first
                 if (email === "admin@uep.com" && password === "admin123") {
-                    foundAdmin = { email: "admin@uep.com", name: "System Owner" };
+                    foundAdmin = { email: "admin@uep.com", name: "System Owner", bhName: "System", bhAddress: "UEP" };
                 } else {
                     // Check dynamically added admins
                     for (let a of admins) {
                         if (a.email === email && a.password === password) {
                             foundAdmin = a;
+                            break;
                         }
                     }
                 }
@@ -102,6 +103,15 @@
                 if (foundAdmin) {
                     localStorage.setItem("activeAdmin", JSON.stringify(foundAdmin));
                     localStorage.setItem("role", "admin");
+                    
+                    // Set bhInfo for multi-tenant isolation
+                    const bhKey = 'tenants_' + foundAdmin.bhName.toLowerCase().replace(/\s+/g, '_');
+                    localStorage.setItem('bhInfo', JSON.stringify({ 
+                        name: foundAdmin.bhName, 
+                        address: foundAdmin.bhAddress, 
+                        key: bhKey 
+                    }));
+                    
                     alert(`Welcome Admin ${foundAdmin.name}!`);
                     window.location.href = "dashboard.html";
                 } else {

@@ -139,20 +139,22 @@
                 return;
             }
 
+const bhKey = 'tenants_' + bhName.toLowerCase().replace(/\s+/g, '_');
+
             const admin = {
                 name,
                 email,
                 password,
                 bhName,
-                bhAddress
+                bhAddress,
+                bhKey: bhKey
             };
 
-admins.push(admin);
+            admins.push(admin);
              localStorage.setItem('admins', JSON.stringify(admins));
              localStorage.setItem('activeAdmin', JSON.stringify(admin));
              localStorage.setItem('role', 'admin');
              
-             const bhKey = 'tenants_' + bhName.toLowerCase().replace(/\s+/g, '_');
              if (!localStorage.getItem(bhKey)) {
                  localStorage.setItem(bhKey, JSON.stringify({}));
              }
