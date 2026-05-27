@@ -98,8 +98,12 @@
 
             // ── Build tenant list (admin: all tenants; tenant: self only) ──────
             const activeTenant = JSON.parse(localStorage.getItem("activeTenant") || "null");
-            const tenantsObj = JSON.parse(localStorage.getItem("tenants") || "{}");
-            const payments = JSON.parse(localStorage.getItem("tenantPayments") || "[]");
+            const bhInfo = JSON.parse(localStorage.getItem("bhInfo") || "{}");
+            const bhKey = bhInfo.key;
+            const tenantsObj = bhKey ? JSON.parse(localStorage.getItem(bhKey) || "{}") : {};
+            const payments = bhKey 
+                ? JSON.parse(localStorage.getItem(bhKey + "_payments") || "[]")
+                : [];
             const tbody = document.querySelector("table tbody");
             if (!tbody) return;
             tbody.innerHTML = "";

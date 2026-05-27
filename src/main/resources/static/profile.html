@@ -4,30 +4,25 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>UEP Boarding House — Profile</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">    <link rel="stylesheet" href="assets/css/styles.css"></head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
 <body>
 
-  <!-- TOP BAR -->
-  <div class="topbar">
-
-    <!-- HAMBURGER BUTTON (added from Dashboard) -->
+<div class="topbar">
     <i id="hamburger" class="fas fa-bars"></i>
-
     <a href="about.html" class="title-link">
         <div class="title">
-                <img src="assets/photos/logo.png">
-                Multi-Tenant Boarding House Payment System
-            </div>
+            <img src="assets/photos/logo.png">
+            Multi-Tenant Boarding House Payment System
+        </div>
     </a>
-
     <div class="topbar-buttons">
         <a href="dashboard.html" class="admin-btn">Back</a>
     </div>
 </div>
 
 <div class="layout">
-
-    <!-- UPDATED SIDEBAR -->
     <div class="nav" id="sidebar">
         <a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a>
         <a href="tenant-list.html"><i class="fas fa-user-friends"></i> Tenants</a>
@@ -39,13 +34,11 @@
         <a href="calendar.html"><i class="fas fa-calendar"></i> Calendar</a>
     </div>
 
-    <!-- MAIN CONTENT -->
     <main class="main">
       <div class="section-title"><i class="fas fa-user"></i> My Profile</div>
       
       <div class="card" style="max-width: 600px; margin: 0 auto;">
         
-        <!-- Profile Picture Section -->
         <div style="text-align: center; padding: 24px; border-bottom: 1px solid #e5e7eb;">
           <div class="avatar" aria-hidden="true" style="width: 120px; height: 120px; margin: 0 auto 16px; border-radius: 50%; background: #222; display: flex; align-items: center; justify-content: center; font-size: 48px; color: white;"></div>
           <input id="profilePicInput" type="file" accept="image/*" hidden>
@@ -54,14 +47,12 @@
           </button>
         </div>
 
-        <!-- User Info Section -->
         <div style="padding: 24px;">
           <div style="text-align: center; margin-bottom: 24px;">
             <h2 id="tenantName" style="font-size: 24px; font-weight: bold; margin: 0 0 8px 0;">Tenant Name</h2>
             <p id="tenantRole" style="font-size: 14px; color: #6b7280; margin: 0;">Tenant</p>
           </div>
 
-          <!-- Personal Information -->
           <div style="margin-bottom: 24px;">
             <h3 style="font-size: 16px; font-weight: bold; margin: 0 0 16px 0; color: #1f2937;">
               <i class="fas fa-id-card"></i> Personal Information
@@ -79,134 +70,61 @@
                 <span style="font-weight: 600; color: #6b7280;"><i class="fas fa-bed"></i> Room</span>
                 <div id="tenantRoom" style="color: #1f2937;">Room</div>
               </div>
+              <div style="display: grid; grid-template-columns: 120px 1fr; gap: 16px; align-items: center;">
+                <span style="font-weight: 600; color: #6b7280;"><i class="fas fa-calendar-alt"></i> Start Date</span>
+                <div id="tenantStartDate" style="color: #1f2937;">—</div>
+              </div>
             </div>
           </div>
 
-          <!-- Action Buttons -->
-          <div style="display: grid; gap: 12px;">
-            <button id="addStaffBtn" class="secondary-btn hidden" style="width: 100%; display: none;">
-              <i class="fas fa-user-plus"></i> Add Staff
-            </button>
+          <div style="display: flex; gap: 12px; justify-content: flex-end; padding: 0 24px 24px;">
+            <button id="editBtn" class="secondary-btn" style="display: none;"><i class="fas fa-edit"></i> Edit Profile</button>
+            <button id="addStaffBtn" class="secondary-btn" style="display: none;"><i class="fas fa-user-plus"></i> Add Staff</button>
           </div>
         </div>
-
       </div>
     </main>
-  </div>
-
-<script>
-  // Get role
-  const role = localStorage.getItem("role");
-
-  // If no one is logged in → go to login
-  if (!role) {
-      window.location.href = "login.html";
-  }
-
-  let user = null;
-
-  // If tenant is logged in
-  if (role === "tenant") {
-      user = JSON.parse(localStorage.getItem("activeTenant"));
-  }
-
-  // If admin is logged in
-  if (role === "admin") {
-      user = JSON.parse(localStorage.getItem("activeAdmin"));
-  }
-
-  // If user data not found → logout
-  if (!user) {
-      window.location.href = "login.html";
-  }
-
-  // Display user info
-  document.getElementById("tenantName").textContent = user.name || "Admin";
-  document.getElementById("tenantRole").textContent = role === "admin" ? "Administrator" : "Tenant";
-  document.getElementById("tenantEmail").textContent = user.email || "N/A";
-  document.getElementById("tenantContact").textContent = user.contact || "N/A";
-  document.getElementById("tenantRoom").textContent = role === "admin" ? "N/A" : user.room;
-</script>
+</div>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-    const role = localStorage.getItem("role"); // "admin" or "tenant"
-
-    // Sidebar menu items
-    const reportsBtn = document.querySelector('a[href="reports.html"]');
-    const notifBtn = document.querySelector('a[href="notifications.html"]');
-
-    if (role === "tenant") {
-        // Hide only Reports and Notifications
-        if (reportsBtn) reportsBtn.style.display = "none";
-        if (notifBtn) notifBtn.style.display = "none";
-    }
-});
-</script>
-
-<!-- Updated version with sidebar & topbar matching tenant list + added icons in content -->
-<!-- Sidebar & Topbar from tenant list added + icons added -->
-<!-- Inserted tenant list topbar and sidebar styles here -->
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    // Add icons to Profile Title
-    const title = document.querySelector("h1.page-title");
-    if (title && !title.innerHTML.includes("fa-user")) {
-        title.innerHTML = '<i class="fas fa-user"></i> ' + title.innerHTML;
+    const role = localStorage.getItem("role");
+    
+    if (!role) {
+        window.location.href = "login.html";
+        return;
     }
 
-    // Add icon to Personal Information title
-    const infoTitle = document.querySelector("h2.info-title");
-    if (infoTitle && !infoTitle.innerHTML.includes("fa-id-card")) {
-        infoTitle.innerHTML = '<i class="fas fa-id-card"></i> ' + infoTitle.innerHTML;
+    let user = role === "admin" ? JSON.parse(localStorage.getItem("activeAdmin")) : JSON.parse(localStorage.getItem("activeTenant"));
+    
+    if (!user) {
+        window.location.href = "login.html";
+        return;
     }
 
-    // Add icons to labels
-    const labels = document.querySelectorAll(".info-label");
-    labels.forEach(label => {
-        let text = label.textContent.trim();
-        if (text === "Email" && !label.innerHTML.includes("fa-envelope")) {
-            label.innerHTML = '<i class="fas fa-envelope"></i> ' + text;
-        }
-        if (text === "Contact Number" && !label.innerHTML.includes("fa-phone")) {
-            label.innerHTML = '<i class="fas fa-phone"></i> ' + text;
-        }
-        if (text === "Room Number" && !label.innerHTML.includes("fa-bed")) {
-            label.innerHTML = '<i class="fas fa-bed"></i> ' + text;
-        }
-    });
-});
-</script>
+    document.getElementById("tenantName").textContent = user.name || "Admin";
+    document.getElementById("tenantRole").textContent = role === "admin" ? "Administrator" : "Tenant";
+    document.getElementById("tenantEmail").textContent = user.email || "N/A";
+    document.getElementById("tenantContact").textContent = user.contact || "N/A";
+    document.getElementById("tenantRoom").textContent = role === "admin" ? "N/A" : (user.room || "Room");
+    document.getElementById("tenantStartDate").textContent = role === "admin" ? "N/A" : (user.startDate ? new Date(user.startDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "—");
 
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    const role = localStorage.getItem("role") || "tenant";
-    if (role === "admin") {
-        const payRentLink = document.querySelector('a[href="pay-rent.html"]');
-        if (payRentLink) {
-            // Keep the icon, just change the text
-            const icon = payRentLink.querySelector("i");
-            payRentLink.textContent = "Tenant Payments";
-            if (icon) {
-                payRentLink.prepend(icon); // Re-add the icon
-            }
-        }
+    const avatarEl = document.querySelector(".avatar");
+    if (user?.profilePic) {
+        avatarEl.style.backgroundImage = `url(${user.profilePic})`;
+        avatarEl.style.backgroundSize = "cover";
+        avatarEl.style.backgroundPosition = "center";
+        avatarEl.textContent = "";
     }
-});
-</script>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    const role = localStorage.getItem("role") || "tenant";
+
+    const editBtn = document.getElementById("editBtn");
     const addStaffBtn = document.getElementById("addStaffBtn");
 
-    // Show Add Staff button only for admin
     if (role === "admin" && addStaffBtn) {
-        addStaffBtn.style.display = "block";
-
+        addStaffBtn.style.display = "inline-flex";
         addStaffBtn.addEventListener("click", () => {
-            // Ask for new staff details
             const name = prompt("Enter staff name:");
-            if (name === null) return; // Cancel pressed → exit
+            if (name === null) return;
             const email = prompt("Enter staff email:");
             if (email === null) return;
             const contact = prompt("Enter staff contact number:");
@@ -214,45 +132,31 @@ document.addEventListener("DOMContentLoaded", () => {
             const password = prompt("Enter staff password:");
             if (password === null) return;
 
-            // Check if all fields are filled
             if (!name || !email || !contact || !password) {
                 alert("All fields are required!");
                 return;
             }
 
-            // Get existing admins from localStorage
             const admins = JSON.parse(localStorage.getItem("admins")) || [];
-
-            // Create new admin object
-            const newAdmin = { name, email, contact, password, role: "admin" };
-
-            // Add new admin to the array
-            admins.push(newAdmin);
+            admins.push({ name, email, contact, password, role: "admin" });
             localStorage.setItem("admins", JSON.stringify(admins));
-
             alert(`Admin "${name}" added successfully!`);
         });
     }
-});
-</script>
 
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    const role = localStorage.getItem("role");
-    let user = role === "admin" ? JSON.parse(localStorage.getItem("activeAdmin")) 
-                                : JSON.parse(localStorage.getItem("activeTenant"));
+    if (role === "tenant" && editBtn) {
+        editBtn.style.display = "inline-flex";
+    }
 
-    const editBtn = document.querySelector(".edit-btn");
     const nameEl = document.getElementById("tenantName");
     const emailEl = document.getElementById("tenantEmail");
     const contactEl = document.getElementById("tenantContact");
     const tenantRoomEl = document.getElementById("tenantRoom");
-    const avatarEl = document.querySelector(".avatar");
-    const changePicBtn = document.getElementById("changePicBtn");
+    const tenantStartDateEl = document.getElementById("tenantStartDate");
     const profilePicInput = document.getElementById("profilePicInput");
     let originalEmail = user?.email || "";
 
-    function renderAvatar() {
+    const renderAvatar = () => {
         if (user?.profilePic) {
             avatarEl.style.backgroundImage = `url(${user.profilePic})`;
             avatarEl.style.backgroundSize = "cover";
@@ -261,13 +165,12 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
             avatarEl.style.backgroundImage = "";
             avatarEl.style.background = "#222";
-            avatarEl.style.backgroundSize = "cover";
             avatarEl.style.color = "white";
             avatarEl.textContent = "Upload";
         }
-    }
+    };
 
-    function persistUser() {
+    const persistUser = () => {
         if (role === "admin") {
             localStorage.setItem("activeAdmin", JSON.stringify(user));
             let admins = JSON.parse(localStorage.getItem("admins")) || [];
@@ -276,26 +179,24 @@ document.addEventListener("DOMContentLoaded", () => {
                 admins[index] = user;
                 localStorage.setItem("admins", JSON.stringify(admins));
             }
-        } else {
-            localStorage.setItem("activeTenant", JSON.stringify(user));
-            let tenants = JSON.parse(localStorage.getItem("tenants")) || {};
-            for (let room in tenants) {
-                tenants[room] = tenants[room].map(t => {
-                    if (t.email === originalEmail) {
-                        return { ...t, ...user };
-                    }
-                    return t;
-                });
-            }
-            localStorage.setItem("tenants", JSON.stringify(tenants));
-        }
-    }
-
-    renderAvatar();
-    nameEl.textContent = user.name || "Admin";
-    emailEl.textContent = user.email || "N/A";
-    contactEl.textContent = user.contact || "N/A";
-    tenantRoomEl.textContent = role === "admin" ? "N/A" : (user.room || "Room");
+} else {
+             localStorage.setItem("activeTenant", JSON.stringify(user));
+             const bhInfo = JSON.parse(localStorage.getItem("bhInfo") || "{}");
+             const bhKey = bhInfo.key;
+             let tenants = bhKey ? JSON.parse(localStorage.getItem(bhKey)) || {} : {};
+             for (let room in tenants) {
+                 tenants[room] = tenants[room].map(t => {
+                     if (t.email === originalEmail) {
+                         return { ...t, ...user };
+                     }
+                     return t;
+                 });
+             }
+             if (bhKey) {
+                 localStorage.setItem(bhKey, JSON.stringify(tenants));
+             }
+         }
+    };
 
     if (profilePicInput) {
         profilePicInput.addEventListener("change", e => {
@@ -311,68 +212,76 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    if (changePicBtn) {
-        changePicBtn.addEventListener("click", () => {
-            profilePicInput?.click();
+    document.getElementById("changePicBtn")?.addEventListener("click", () => {
+        profilePicInput?.click();
+    });
+
+    if (editBtn) {
+        editBtn.addEventListener("click", () => {
+            if (editBtn.textContent.includes("Edit")) {
+                nameEl.innerHTML = `<input type="text" id="editName" value="${user.name || ''}" style="width: 90%;">`;
+                emailEl.innerHTML = `<input type="email" id="editEmail" value="${user.email || ''}" style="width: 90%;">`;
+                contactEl.innerHTML = `<input type="text" id="editContact" value="${user.contact || ''}" style="width: 90%;">`;
+                editBtn.innerHTML = '<i class="fas fa-save"></i> Save Profile';
+            } else {
+                const newName = document.getElementById("editName").value.trim();
+                const newEmail = document.getElementById("editEmail").value.trim();
+                const newContact = document.getElementById("editContact").value.trim();
+
+                if (!newName || !newEmail || !newContact) {
+                    alert("All fields are required!");
+                    return;
+                }
+
+                user.name = newName;
+                user.email = newEmail;
+                user.contact = newContact;
+
+                persistUser();
+                originalEmail = user.email;
+
+                nameEl.textContent = user.name;
+                emailEl.textContent = user.email;
+                contactEl.textContent = user.contact;
+                renderAvatar();
+                editBtn.innerHTML = '<i class="fas fa-edit"></i> Edit Profile';
+                alert("Profile updated successfully!");
+            }
         });
     }
 
-    editBtn.addEventListener("click", () => {
-        if (editBtn.textContent === "Edit Profile") {
-            // Change to input fields
-            nameEl.innerHTML = `<input type="text" id="editName" value="${user.name || ''}" style="width: 90%;">`;
-            emailEl.innerHTML = `<input type="email" id="editEmail" value="${user.email || ''}" style="width: 90%;">`;
-            contactEl.innerHTML = `<input type="text" id="editContact" value="${user.contact || ''}" style="width: 90%;">`;
-            editBtn.textContent = "Save Profile";
-        } else {
-            const newName = document.getElementById("editName").value.trim();
-            const newEmail = document.getElementById("editEmail").value.trim();
-            const newContact = document.getElementById("editContact").value.trim();
+    // Sidebar menu buttons
+    const reportsBtn = document.querySelector('a[href="reports.html"]');
+    const notifBtn = document.querySelector('a[href="notifications.html"]');
+    if (role === "tenant") {
+        if (reportsBtn) reportsBtn.style.display = "none";
+        if (notifBtn) notifBtn.style.display = "none";
+    }
 
-            if (!newName || !newEmail || !newContact) {
-                alert("All fields are required!");
-                return;
-            }
-
-            user.name = newName;
-            user.email = newEmail;
-            user.contact = newContact;
-
-            if (role === "admin") {
-                localStorage.setItem("activeAdmin", JSON.stringify(user));
-                let admins = JSON.parse(localStorage.getItem("admins")) || [];
-                const index = admins.findIndex(a => a.email === originalEmail);
-                if (index !== -1) {
-                    admins[index] = user;
-                    localStorage.setItem("admins", JSON.stringify(admins));
-                }
-            } else {
-                localStorage.setItem("activeTenant", JSON.stringify(user));
-                let tenants = JSON.parse(localStorage.getItem("tenants")) || {};
-                for (let room in tenants) {
-                    tenants[room] = tenants[room].map(t => {
-                        if (t.email === originalEmail) {
-                            return { ...t, ...user };
-                        }
-                        return t;
-                    });
-                }
-                localStorage.setItem("tenants", JSON.stringify(tenants));
-            }
-            originalEmail = user.email;
-
-            nameEl.textContent = user.name;
-            emailEl.textContent = user.email;
-            contactEl.textContent = user.contact;
-            renderAvatar();
-            editBtn.textContent = "Edit Profile";
-            alert("Profile updated successfully!");
+    // Admin rename Pay Rent to Tenant Payments
+    if (role === "admin") {
+        const payRentLink = document.querySelector('a[href="pay-rent.html"]');
+        if (payRentLink) {
+            const icon = payRentLink.querySelector("i");
+            payRentLink.textContent = "Tenant Payments";
+            if (icon) payRentLink.prepend(icon);
         }
-    });
+    }
+
+    const adminBtn = document.querySelector('.admin-btn');
+    if (adminBtn) {
+        adminBtn.textContent = role === "tenant" ? "Back" : "Back";
+        adminBtn.href = 'dashboard.html';
+    }
 });
+
+const ham = document.getElementById("hamburger");
+const side = document.getElementById("sidebar");
+if (ham && side) {
+    ham.addEventListener("click", () => side.classList.toggle("show"));
+}
 </script>
 
-
-  <script src="assets/js/sidebar-active.js"></script>
+<script src="assets/js/sidebar-active.js"></script>
 </body>
 </html>

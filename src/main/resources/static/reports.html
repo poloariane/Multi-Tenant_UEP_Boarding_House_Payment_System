@@ -138,36 +138,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function getPaymentRecordsFromPage() {
         try {
-            const response = await fetch("payment-records.html", { cache: "no-store" });
-            if (!response.ok) return [];
-
-            const html = await response.text();
-            const doc = new DOMParser().parseFromString(html, "text/html");
-            return Array.from(doc.querySelectorAll("tbody tr")).map(row => {
-                const cells = row.querySelectorAll("td");
-                const name = normalizeText(cells[0]?.querySelector("span")?.textContent || cells[0]?.textContent);
-                const amount = normalizeText(cells[2]?.textContent).replace(/[^\d.]/g, "");
-                const status = normalizeText(cells[3]?.textContent).toLowerCase();
-                const date = normalizeText(cells[4]?.textContent);
-
-                return {
-                    name,
-                    amount: parseFloat(amount) || 0,
-                    status,
-                    date: date === "—" || date === "-" ? "" : date,
-                };
-            }).filter(payment => payment.name && payment.status === "paid" && payment.date);
+            const bhInfo = JSON.parse(localStorage.getItem("bhInfo") || "{}");
+            const bhKey = bhInfo.key || "tenants";
+            const payments = bhInfo.key 
+                ? JSON.parse(localStorage.getItem(bhInfo.key + "_payments") || "[]")
+                : JSON.parse(localStorage.getItem("tenantPayments") || "[]");
+            return payments.map(p => ({
+                name: p.name,
+                amount: parseFloat(p.amount) || 0,
+                status: p.status || "paid",
+                date: p.date || p.paymentDate || p.createdAt || ""
+            })).filter(payment => payment.name);
         } catch (error) {
             return [];
         }
     }
 
     async function renderReports() {
-    const tenants = getStoredJson("tenants", {});
-    const payments = [
-        ...await getPaymentRecordsFromPage(),
-        ...getStoredJson("tenantPayments", []),
-    ];
+        const bhInfo = JSON.parse(localStorage.getItem("bhInfo") || "{}");
+        const bhKey = bhInfo.key;
+        const tenants = bhKey ? getStoredJson(bhKey, {}) : {};
+        const payments = [
+            ...await getPaymentRecordsFromPage(),
+            ...(bhKey ? getStoredJson(bhKey + "_payments", []) : []),
+        ];
     const monthlySummary = clearReportTable("monthlySummary");
     const tenantStatus = clearReportTable("tenantStatus");
     const paymentTrends = clearReportTable("paymentTrends");
@@ -353,7 +347,9 @@ document.addEventListener("DOMContentLoaded", () => {
     renderReports();
     window.addEventListener("pageshow", renderReports);
     window.addEventListener("storage", event => {
-        if (event.key === "tenants" || event.key === "tenantPayments") {
+        const bhInfo = JSON.parse(localStorage.getItem("bhInfo") || "{}");
+        const bhKey = bhInfo.key || "tenants";
+        if (event.key === bhKey || event.key === bhKey + "_payments" || event.key === "tenants" || event.key === "tenantPayments") {
             renderReports();
         }
     });

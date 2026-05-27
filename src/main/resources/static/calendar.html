@@ -99,16 +99,26 @@ function renderCalendar() {
     const today = new Date();
     const isSameMonth = today.getMonth() === month && today.getFullYear() === year;
 
+    // Get tenant's due date for highlighting
+    const role = localStorage.getItem("role");
+    const activeTenant = role === "tenant" ? JSON.parse(localStorage.getItem("activeTenant") || "null") : null;
+    const tenantDueDate = activeTenant?.startDate ? new Date(activeTenant.startDate) : null;
+    const dueDay = tenantDueDate ? tenantDueDate.getDate() : null;
+
     // Add days
     for (let day = 1; day <= daysInMonth; day++) {
         const box = document.createElement("div");
         box.classList.add("day-box");
         box.textContent = day;
 
-        // Highlight last week of the month (Rent Due)
-        if (day > daysInMonth - 7) {
-            box.classList.add("due");
-            box.title = "Rent Due Week";
+        // Highlight due week for tenants based on their start date
+        if (role === "tenant" && tenantDueDate) {
+            const dueWeekNum = Math.ceil(dueDay / 7);
+            const dayWeekNum = Math.ceil(day / 7);
+            if (dueWeekNum === dayWeekNum) {
+                box.classList.add("due");
+                box.title = "Due Week";
+            }
         }
 
         // Highlight current day
@@ -129,6 +139,29 @@ document.getElementById("prevMonth").addEventListener("click", () => {
 document.getElementById("nextMonth").addEventListener("click", () => {
     currentDate.setMonth(currentDate.getMonth() + 1);
     renderCalendar();
+});
+
+// Dynamic legend based on role
+document.addEventListener("DOMContentLoaded", () => {
+    const role = localStorage.getItem("role");
+    const legend = document.querySelector(".calendar-legend");
+    
+    if (role === "admin" && legend) {
+        const dueLegend = Array.from(legend.children).find(el => el.textContent.includes("Rent Due"));
+        if (dueLegend) dueLegend.remove();
+    }
+    
+    if (role === "tenant" && legend) {
+        const tenant = JSON.parse(localStorage.getItem("activeTenant") || "null");
+        if (tenant?.startDate) {
+            const dueLegend = Array.from(legend.children).find(el => el.textContent.includes("Rent Due"));
+            if (dueLegend) {
+                const dueDate = new Date(tenant.startDate);
+                const dueWeek = Math.ceil(dueDate.getDate() / 7);
+                dueLegend.innerHTML = `<span class="legend-box due"></span> Red = Your Due Week (Week ${dueWeek})`;
+            }
+        }
+    }
 });
 
 renderCalendar();

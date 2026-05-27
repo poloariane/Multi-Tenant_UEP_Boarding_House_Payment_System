@@ -80,6 +80,9 @@
                     <option value="room10">Room 10</option>
                 </select>
 
+                <label>Start Date</label>
+                <input type="date" id="startDate" required>
+
                 <label>Monthly Rent (₱)</label>
                 <div class="input-group">
                     <span class="prefix">₱</span>
@@ -107,8 +110,10 @@
         };
 
         function getRoomSettings() {
-            const hasSavedRoomSettings = localStorage.getItem("roomSettings") !== null;
-            const savedSettings = JSON.parse(localStorage.getItem("roomSettings") || "{}");
+            const bhInfo = JSON.parse(localStorage.getItem("bhInfo") || "{}");
+            const bhKey = bhInfo.key;
+            const hasSavedRoomSettings = bhKey && localStorage.getItem(bhKey + "_roomSettings") !== null;
+            const savedSettings = bhKey && hasSavedRoomSettings ? JSON.parse(localStorage.getItem(bhKey + "_roomSettings") || "{}") : {};
             const settings = {};
 
             if (!hasSavedRoomSettings) {
@@ -164,14 +169,18 @@
             const password = document.getElementById("password").value.trim();
             const room = roomSelect.value;
             const rent = document.getElementById("rent").value;
+            const startDate = document.getElementById("startDate").value;
             const roomSettings = getRoomSettings();
 
-            if (!name || !email || !contact || !password || !roomSettings[room]) {
+            if (!name || !email || !contact || !password || !roomSettings[room] || !startDate) {
                 alert("Please complete all fields.");
                 return;
             }
 
-            let tenants = JSON.parse(localStorage.getItem("tenants")) || {};
+            const bhInfo = JSON.parse(localStorage.getItem("bhInfo") || "{}");
+            const bhKey = bhInfo.key;
+
+            let tenants = bhKey ? JSON.parse(localStorage.getItem(bhKey)) || {} : {};
 
             if (!tenants[room]) tenants[room] = [];
 
@@ -190,10 +199,12 @@
                 email,
                 contact,
                 password,
-                rent
+                rent,
+                startDate,
+                bhKey: bhKey
             });
 
-            localStorage.setItem("tenants", JSON.stringify(tenants));
+            localStorage.setItem(bhKey, JSON.stringify(tenants));
 
             alert("Tenant successfully added!");
             window.location.href = "tenant-list.html";

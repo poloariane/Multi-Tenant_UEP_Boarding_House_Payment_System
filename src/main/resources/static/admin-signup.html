@@ -11,12 +11,13 @@
 </head>
 <body class="signup-page">
 
+<a href="index.html" class="back-arrow" title="Back to Home">&larr;</a>
     <div class="signup-container">
         <!-- Left Panel -->
         <div class="signup-left">
             <div class="signup-branding">
                 <div class="brand">
-                     <img src="assets/photos/logo-login.png" alt="UEP logo">
+                    <img src="assets/photos/logo-login.png" alt="UEP logo">
                     <h2>Multi-Tenant BH Payment System</h2>
                 </div>
                 <h1>Join the Future of Boarding House Management</h1>
@@ -57,7 +58,6 @@
 
         <!-- Right Panel -->
         <div class="signup-right">
-            <a href="index.html" class="back-btn">Back</a>
             <div class="signup-form-card">
                 <div class="signup-header">
                     <h2>Create Admin Account</h2>
@@ -147,11 +147,17 @@
                 bhAddress
             };
 
-            admins.push(admin);
-            localStorage.setItem('admins', JSON.stringify(admins));
-            localStorage.setItem('activeAdmin', JSON.stringify(admin));
-            localStorage.setItem('role', 'admin');
-            localStorage.setItem('bhInfo', JSON.stringify({ name: bhName, address: bhAddress }));
+admins.push(admin);
+             localStorage.setItem('admins', JSON.stringify(admins));
+             localStorage.setItem('activeAdmin', JSON.stringify(admin));
+             localStorage.setItem('role', 'admin');
+             
+             const bhKey = 'tenants_' + bhName.toLowerCase().replace(/\s+/g, '_');
+             if (!localStorage.getItem(bhKey)) {
+                 localStorage.setItem(bhKey, JSON.stringify({}));
+             }
+             
+             localStorage.setItem('bhInfo', JSON.stringify({ name: bhName, address: bhAddress, key: bhKey }));
 
             alert('Admin account created successfully. Redirecting to dashboard.');
             window.location.href = 'dashboard.html';

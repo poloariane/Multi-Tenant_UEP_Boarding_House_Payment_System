@@ -114,21 +114,30 @@
             // TENANT LOGIN
             // ============================
             if (type === "tenant") {
-                let tenants = JSON.parse(localStorage.getItem("tenants")) || {};
                 let foundTenant = null;
+                let foundBhKey = null;
 
-                // search all rooms
-                for (let room in tenants) {
-                    tenants[room].forEach(t => {
-                        if (t.email === email && t.password === password) {
-                            foundTenant = { ...t, room: room };
+                // search all boarding houses
+                for (let key in localStorage) {
+                    if (key.startsWith("tenants_")) {
+                        let tenants = JSON.parse(localStorage.getItem(key)) || {};
+                        for (let room in tenants) {
+                            tenants[room].forEach(t => {
+                                if (t.email === email && t.password === password) {
+                                    foundTenant = { ...t, room: room };
+                                    foundBhKey = t.bhKey || key;
+                                }
+                            });
                         }
-                    });
+                    }
                 }
 
                 if (foundTenant) {
                     localStorage.setItem("activeTenant", JSON.stringify(foundTenant));
                     localStorage.setItem("role", "tenant");
+                    if (foundBhKey) {
+                        localStorage.setItem("bhInfo", JSON.stringify({ key: foundBhKey }));
+                    }
 
                     alert("Login Successful! Welcome Tenant!");
                     window.location.href = "dashboard.html";

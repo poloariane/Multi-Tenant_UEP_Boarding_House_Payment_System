@@ -101,10 +101,12 @@ function timeAgo(dateVal) {
 /* ── Generate notifications ──────────────────────────────────────────── */
 
 function generateNotifications() {
-    const payments  = JSON.parse(localStorage.getItem("tenantPayments") || "[]");
-    const tenants   = JSON.parse(localStorage.getItem("tenants") || "{}");
-    const role      = localStorage.getItem("role") || "tenant";
-    const activeTnt = JSON.parse(localStorage.getItem("activeTenant") || "null");
+        const bhInfo = JSON.parse(localStorage.getItem("bhInfo") || "{}");
+        const bhKey = bhInfo.key;
+        const tenants   = bhKey ? JSON.parse(localStorage.getItem(bhKey) || "{}") : {};
+        const payments  = bhKey ? JSON.parse(localStorage.getItem(bhKey + "_payments") || "[]") : [];
+        const role      = localStorage.getItem("role") || "tenant";
+        const activeTnt = JSON.parse(localStorage.getItem("activeTenant") || "null");
 
     const now           = new Date();
     const curMonthIdx   = now.getMonth();

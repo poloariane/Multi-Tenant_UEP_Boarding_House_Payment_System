@@ -909,6 +909,22 @@ table td.status-cancelled {
   font-weight: 700;
 }
 
+/* Dashboard status badges */
+.status-paid {
+  color: var(--success);
+  font-weight: 700;
+}
+
+.status-unpaid {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+.status-partial {
+  color: var(--warning);
+  font-weight: 700;
+}
+
 .form-box,
 .payment-form,
 .profile-card {
@@ -2103,6 +2119,34 @@ button.secondary:hover {
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.2);
   overflow: hidden;
+  position: relative;
+  align-items: stretch;
+}
+
+.back-arrow {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: var(--primary);
+  color: white;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  font-size: 1.4rem;
+  z-index: 100;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(8, 127, 140, 0.3);
+}
+
+.back-arrow:hover {
+  background: var(--primary-hover);
+  color: white;
+  transform: translateX(-3px);
+  box-shadow: 0 6px 16px rgba(8, 127, 140, 0.4);
 }
 
 .signup-left {
@@ -2113,6 +2157,7 @@ button.secondary:hover {
   justify-content: center;
   color: white;
   position: relative;
+  height: 100%;
 }
 
 .signup-left::before {
@@ -2266,9 +2311,11 @@ button.secondary:hover {
   align-items: center;
   justify-content: center;
   background: white;
+  height: 100%;
 }
 
 .signup-form-card, .login-form-card {
+  position: relative;
   width: 100%;
   max-width: 400px;
   background: rgba(255, 255, 255, 0.9);
@@ -4088,4 +4135,24 @@ td[style*="color:green"] {
 
 td[style*="color:red"] {
   color: var(--danger) !important;
+}
+
+
+
+/* Register box styles */
+.register-box {
+  position: relative;
+  max-width: 480px;
+  margin: 40px auto;
+  padding: 32px;
+  background: var(--bg-card);
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+}
+
+.register-box h2 {
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 24px;
+  color: var(--text);
 }

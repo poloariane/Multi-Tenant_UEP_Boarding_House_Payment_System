@@ -65,12 +65,6 @@
                 </div>
 
                 <div class="box">
-                    <i class="fas fa-calendar-day"></i>
-                    <h3>Upcoming Due Date</h3>
-                    <p id="nextDueDate">—</p>
-                </div>
-
-                <div class="box">
                     <i class="fas fa-exclamation-circle"></i>
                     <h3>Unpaid This Month</h3>
                     <p id="unpaidThisMonth">0</p>
@@ -83,9 +77,27 @@
                 </div>
 
                 <div class="box">
-                    <i class="fas fa-hourglass-half"></i>
-                    <h3>Outstanding Payments</h3>
-                    <p id="pendingPayments">0</p>
+                    <i class="fas fa-calendar-alt"></i>
+                    <h3>Start Date</h3>
+                    <p id="startDate">—</p>
+                </div>
+
+                <div class="box">
+                    <i class="fas fa-calendar-check"></i>
+                    <h3>Due Date</h3>
+                    <p id="dueDate">—</p>
+                </div>
+
+                <div class="box">
+                    <i class="fas fa-calendar-day"></i>
+                    <h3>Due Week</h3>
+                    <p id="dueWeek">—</p>
+                </div>
+
+                <div class="box">
+                    <i class="fas fa-circle-info"></i>
+                    <h3>Current Month Status</h3>
+                    <p id="currentMonthStatus">—</p>
                 </div>
 
             </div>
@@ -131,83 +143,158 @@ window.addEventListener("resize", () => {
 // Role-based access control
 document.addEventListener("DOMContentLoaded", () => {
     const role = localStorage.getItem("role");
-    const activeAdmin = JSON.parse(localStorage.getItem("activeAdmin") || "null");
     
-    if (!activeAdmin && role !== "admin") {
+    if (role === "admin") {
+        const activeAdmin = JSON.parse(localStorage.getItem("activeAdmin") || "null");
+        if (!activeAdmin) {
+            window.location.href = "login.html";
+        }
+    } else if (role === "tenant") {
+        const activeTenant = JSON.parse(localStorage.getItem("activeTenant") || "null");
+        if (!activeTenant) {
+            window.location.href = "login.html";
+        }
+    } else {
         window.location.href = "login.html";
     }
 });
-</script>
-<script>
+
+// Tenant dashboard: show start date, due date, due week, current month status
+function getPaymentDate(payment) {
+    if (payment.paymentMonth) {
+        const monthDate = new Date(`${payment.paymentMonth}-01T00:00:00`);
+        return Number.isNaN(monthDate.getTime()) ? null : monthDate;
+    }
+    const parsed = new Date(payment.date || payment.dateString || payment.createdAt || 0);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function getFormattedDate(date) {
+    if (!date || Number.isNaN(date.getTime())) return "—";
+    return date.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+}
+
+function getFormattedWeek(date) {
+    if (!date || Number.isNaN(date.getTime())) return "—";
+    const weekNum = Math.ceil(date.getDate() / 7);
+    return `Week ${weekNum}`;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
-    const tenants = JSON.parse(localStorage.getItem('tenants')) || {};
-    const payments = JSON.parse(localStorage.getItem('tenantPayments') || '[]');
-    const totalTenants = Object.values(tenants).reduce((sum, roomList) => sum + roomList.length, 0);
-
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
-
-    const paymentsThisMonth = payments.filter(payment => {
-        const paymentDate = new Date(payment.date || payment.paymentDate || payment.createdAt || '');
-        return !isNaN(paymentDate) && paymentDate.getMonth() === currentMonth && paymentDate.getFullYear() === currentYear;
-    });
-
-    const paidThisMonthSet = new Set(paymentsThisMonth.map(payment => {
-        return (payment.email || payment.name || payment.room || '').toString().trim().toLowerCase();
-    }).filter(Boolean));
-
-    const totalCollected = payments.reduce((sum, payment) => sum + (parseFloat(payment.amount) || 0), 0);
-    const unpaidThisMonth = Math.max(0, totalTenants - paidThisMonthSet.size);
-    const nextDueDate = new Date(currentYear, currentMonth + 1, 1);
-
-    const setText = (id, value) => {
-        const element = document.getElementById(id);
-        if (element) element.textContent = value;
-    };
-
-    setText('totalTenants', totalTenants);
-    setText('paidThisMonth', paidThisMonthSet.size);
-    setText('nextDueDate', nextDueDate.toLocaleString('default', { month: 'long', day: 'numeric', year: 'numeric' }));
-    setText('unpaidThisMonth', unpaidThisMonth);
-    setText('totalCollected', `₱${totalCollected.toLocaleString()}`);
-    setText('pendingPayments', unpaidThisMonth);
-
-    const role = localStorage.getItem('role') || 'tenant';
+    const role = localStorage.getItem("role") || "tenant";
     const boxes = document.querySelectorAll('.box');
-    if (role === 'tenant') {
-        // Tenants see: Total Tenants (0), Paid This Month (1), Upcoming Due Date (2), Unpaid This Month (3)
-        const allowed = [0, 1, 2, 3];
+
+    if (role === "tenant") {
+        // Tenants see: Start Date (4), Due Date (5), Due Week (6), Current Month Status (7)
         boxes.forEach((box, index) => {
-            if (!allowed.includes(index)) {
+            if (index < 4 || index > 7) {
                 box.style.display = 'none';
             }
         });
-    } else {
-        // Admins see everything EXCEPT Upcoming Due Date (2)
-        boxes.forEach((box, index) => {
-            if (index === 2) box.style.display = 'none';
-        });
-    }
 
-    const reportsBtn = document.querySelector('a[href="reports.html"]');
-    const notifBtn = document.querySelector('a[href="notifications.html"]');
-    if (role === 'tenant') {
-        if (reportsBtn) reportsBtn.style.display = 'none';
-        if (notifBtn) notifBtn.style.display = 'none';
+        const activeTenant = JSON.parse(localStorage.getItem("activeTenant") || "null");
+        if (activeTenant) {
+            // Show start date
+            const startDate = activeTenant.startDate ? new Date(activeTenant.startDate) : null;
+            document.getElementById("startDate").textContent = startDate ? getFormattedDate(startDate) : "—";
+
+            // Calculate due date (same day next month)
+            let dueDate = "—";
+            let dueWeek = "—";
+            if (startDate && !Number.isNaN(startDate.getTime())) {
+                dueDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, startDate.getDate());
+                dueWeek = getFormattedWeek(dueDate);
+                document.getElementById("dueDate").textContent = getFormattedDate(dueDate);
+                document.getElementById("dueWeek").textContent = dueWeek;
+            } else {
+                document.getElementById("dueDate").textContent = dueDate;
+                document.getElementById("dueWeek").textContent = dueWeek;
+            }
+
+            // Check current month payment status
+            const payments = JSON.parse(localStorage.getItem("tenantPayments") || "[]");
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+
+            const tenantPayments = payments.filter(p => {
+                const pDate = getPaymentDate(p);
+                const pName = String(p.name || "").trim().toLowerCase();
+                const tName = String(activeTenant.name || "").trim().toLowerCase();
+                return pDate && pDate.getMonth() === currentMonth && pDate.getFullYear() === currentYear && pName === tName;
+            });
+
+            const totalPaid = tenantPayments.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
+            const roomRent = parseFloat(activeTenant.rent) || 0;
+            
+            const statusEl = document.getElementById("currentMonthStatus");
+            if (tenantPayments.length > 0) {
+                if (totalPaid >= roomRent) {
+                    statusEl.innerHTML = '<span class="status-paid">Paid</span>';
+                } else {
+                    statusEl.innerHTML = '<span class="status-partial">Partial - ₱' + totalPaid.toLocaleString() + '</span>';
+                }
+            } else {
+                statusEl.innerHTML = '<span class="status-unpaid">Unpaid</span>';
+            }
+        }
+
+        const reportsBtn = document.querySelector('a[href="reports.html"]');
+        const notifBtn = document.querySelector('a[href="notifications.html"]');
+        if (reportsBtn) reportsBtn.style.display = "none";
+        if (notifBtn) notifBtn.style.display = "none";
+    } else {
+        // Admin sees: Total Tenants (0), Paid This Month (1), Total Collected (2), Unpaid This Month (3)
+        boxes.forEach((box, index) => {
+            if (index > 3) {
+                box.style.display = 'none';
+            }
+        });
+
+const bhInfo = JSON.parse(localStorage.getItem("bhInfo") || "{}");
+    const bhKey = bhInfo.key;
+    const tenants = bhKey ? JSON.parse(localStorage.getItem(bhKey) || "{}") : {};
+    const payments = bhKey ? JSON.parse(localStorage.getItem(bhKey + "_payments") || "[]") : [];
+        const totalTenants = Object.values(tenants).reduce((sum, roomList) => sum + roomList.length, 0);
+
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+
+        const paymentsThisMonth = payments.filter(payment => {
+            const paymentDate = getPaymentDate(payment);
+            return paymentDate && paymentDate.getMonth() === currentMonth && paymentDate.getFullYear() === currentYear;
+        });
+
+        const paidThisMonthSet = new Set(paymentsThisMonth.map(payment => {
+            return (payment.name || '').toString().trim().toLowerCase();
+        }).filter(Boolean));
+
+        const totalCollected = payments.reduce((sum, payment) => sum + (parseFloat(payment.amount) || 0), 0);
+        const unpaidThisMonth = Math.max(0, totalTenants - paidThisMonthSet.size);
+
+        document.getElementById('totalTenants').textContent = totalTenants;
+        document.getElementById('paidThisMonth').textContent = paidThisMonthSet.size;
+        document.getElementById('totalCollected').textContent = `₱${totalCollected.toLocaleString()}`;
+        document.getElementById('unpaidThisMonth').textContent = unpaidThisMonth;
+
+        const reportsBtn = document.querySelector('a[href="reports.html"]');
+        const notifBtn = document.querySelector('a[href="notifications.html"]');
+        if (reportsBtn) reportsBtn.style.display = "inline-flex";
+        if (notifBtn) notifBtn.style.display = "inline-flex";
     }
 
     const adminBtn = document.querySelector('.admin-btn');
     if (adminBtn) {
-        adminBtn.textContent = role === 'tenant' ? 'Profile' : 'Admin';
+        adminBtn.textContent = role === "tenant" ? "Profile" : "Admin";
         adminBtn.href = 'profile.html';
     }
 
-    if (role === 'admin') {
+    if (role === "admin") {
         const payRentLink = document.querySelector('a[href="pay-rent.html"]');
         if (payRentLink) {
             const icon = payRentLink.querySelector('i');
-            payRentLink.textContent = 'Tenant Payments';
+            payRentLink.textContent = "Tenant Payments";
             if (icon) payRentLink.prepend(icon);
         }
     }

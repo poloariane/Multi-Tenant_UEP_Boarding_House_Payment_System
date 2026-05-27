@@ -307,10 +307,12 @@
         }
 
         if (method === "GCash") {
-            localStorage.setItem("pendingUpload", JSON.stringify({ name, room, amount, method, payType, paymentMonth: selectedMonthValue, date: selectedMonth.toLocaleString() }));
+            const bhInfo = JSON.parse(localStorage.getItem("bhInfo") || "{}");
+            localStorage.setItem("pendingUpload", JSON.stringify({ name, room, amount, method, payType, paymentMonth: selectedMonthValue, date: selectedMonth.toLocaleString(), bhKey: bhInfo.key }));
             window.location.href = "https://www.gcash.com/";
         } else if (method === "PayMaya") {
-            localStorage.setItem("pendingUpload", JSON.stringify({ name, room, amount, method, payType, paymentMonth: selectedMonthValue, date: selectedMonth.toLocaleString() }));
+            const bhInfo = JSON.parse(localStorage.getItem("bhInfo") || "{}");
+            localStorage.setItem("pendingUpload", JSON.stringify({ name, room, amount, method, payType, paymentMonth: selectedMonthValue, date: selectedMonth.toLocaleString(), bhKey: bhInfo.key }));
             window.location.href = "https://www.paymaya.com/";
         } else {
             alert("❌ Please select a payment method.");
@@ -426,6 +428,11 @@
                 const payments = JSON.parse(localStorage.getItem("tenantPayments") || "[]");
                 payments.push(record);
                 localStorage.setItem("tenantPayments", JSON.stringify(payments));
+                if (data.bhKey) {
+                    const bhPayments = JSON.parse(localStorage.getItem(data.bhKey + "_payments") || "[]");
+                    bhPayments.push(record);
+                    localStorage.setItem(data.bhKey + "_payments", JSON.stringify(bhPayments));
+                }
                 alert("✅ Payment submitted successfully!");
 
                 // Remove pendingUpload so it doesn't trigger redirect again
@@ -508,7 +515,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function renderAdminPayments() {
-        const payments = JSON.parse(localStorage.getItem("tenantPayments") || "[]");
+        const bhInfo = JSON.parse(localStorage.getItem("bhInfo") || "{}");
+        const payments = bhInfo.key 
+            ? JSON.parse(localStorage.getItem(bhInfo.key + "_payments") || "[]")
+            : JSON.parse(localStorage.getItem("tenantPayments") || "[]");
         tbody.innerHTML = "";
 
         if (payments.length === 0) {

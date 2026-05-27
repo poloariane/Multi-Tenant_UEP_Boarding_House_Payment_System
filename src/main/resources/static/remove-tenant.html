@@ -73,7 +73,9 @@ function loadTenants(room) {
     const tenantSelect = document.getElementById("tenantSelect");
     tenantSelect.innerHTML = '<option value="" disabled selected>Select Tenant</option>';
 
-    const tenants = JSON.parse(localStorage.getItem("tenants")) || {};
+    const bhInfo = JSON.parse(localStorage.getItem("bhInfo") || "{}");
+    const bhKey = bhInfo.key;
+    const tenants = bhKey ? JSON.parse(localStorage.getItem(bhKey)) || {} : {};
 
     if (!tenants[room] || tenants[room].length === 0) {
         tenantSelect.innerHTML += '<option disabled>No tenants in this room</option>';
@@ -100,7 +102,9 @@ function removeTenant() {
         return;
     }
 
-    let tenants = JSON.parse(localStorage.getItem("tenants")) || {};
+    const bhInfo = JSON.parse(localStorage.getItem("bhInfo") || "{}");
+    const bhKey = bhInfo.key;
+    let tenants = bhKey ? JSON.parse(localStorage.getItem(bhKey)) || {} : {};
     if (!tenants[room]) return;
 
     tenants[room] = tenants[room].filter(t => {
@@ -108,7 +112,7 @@ function removeTenant() {
         return name !== selectedName;
     });
 
-    localStorage.setItem("tenants", JSON.stringify(tenants));
+    localStorage.setItem(bhKey, JSON.stringify(tenants));
 
     alert(`Tenant "${selectedName}" removed successfully.`);
     loadTenants(room);

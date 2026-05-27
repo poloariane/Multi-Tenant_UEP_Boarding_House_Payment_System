@@ -73,18 +73,20 @@
    
     <script>
         // ── Utilities ─────────────────────────────────────────────────────────
-        function getAllTenants() {
-            const tenants = JSON.parse(localStorage.getItem("tenants") || "{}");
-            const names = [];
-            Object.keys(tenants)
-                .sort((a, b) => Number(a.replace("room", "")) - Number(b.replace("room", "")))
-                .forEach(room => {
-                    (tenants[room] || []).forEach(t => {
-                        names.push(typeof t === "object" ? t.name : t);
-                    });
-                });
-            return names;
-        }
+function getAllTenants() {
+             const bhInfo = JSON.parse(localStorage.getItem("bhInfo") || "{}");
+             const bhKey = bhInfo.key || "tenants";
+             const tenants = JSON.parse(localStorage.getItem(bhKey) || "{}");
+             const names = [];
+             Object.keys(tenants)
+                 .sort((a, b) => Number(a.replace("room", "")) - Number(b.replace("room", "")))
+                 .forEach(room => {
+                     (tenants[room] || []).forEach(t => {
+                         names.push(typeof t === "object" ? t.name : t);
+                     });
+                 });
+             return names;
+         }
 
         // Resolve a month string (e.g. "January 2025") to a payment object, or null
         function getPaymentForMonth(payments, monthLabel, normTenant) {
@@ -128,7 +130,11 @@
 
         // ── Month-based history builder ─────────────────────────────────────
         function buildHistory(selectedName) {
-            const payments = JSON.parse(localStorage.getItem("tenantPayments") || "[]");
+            const bhInfo = JSON.parse(localStorage.getItem("bhInfo") || "{}");
+            const bhKey = bhInfo.key;
+            const payments = bhKey 
+                ? JSON.parse(localStorage.getItem(bhKey + "_payments") || "[]")
+                : [];
             const normTenant = selectedName.trim().toLowerCase();
             const tenantPayments = payments.filter(p => p.name && p.name.trim().toLowerCase() === normTenant);
 

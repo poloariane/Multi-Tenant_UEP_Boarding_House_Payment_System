@@ -97,7 +97,7 @@ ham.addEventListener("click", () => {
 <script>
 window.addEventListener('DOMContentLoaded', () => {
 
-    // MAX capacity per room
+// MAX capacity per room
     const maxSlots = {
         room1: 4, room2: 4, room3: 4, room4: 4,
         room5: 4, room6: 8, room7: 8, room8: 4,
@@ -111,19 +111,14 @@ window.addEventListener('DOMContentLoaded', () => {
         room9: 1200, room10: 1200
     };
 
-    let tenants = JSON.parse(localStorage.getItem('tenants')) || {};
-    const payments = JSON.parse(localStorage.getItem("tenantPayments") || "[]");
+    const bhInfo = JSON.parse(localStorage.getItem("bhInfo") || "{}");
+    const bhKey = bhInfo.key;
+    const tenants = bhKey ? JSON.parse(localStorage.getItem(bhKey) || "{}") : {};
+    const payments = bhKey ? JSON.parse(localStorage.getItem(bhKey + "_payments") || "[]") : [];
     const role = localStorage.getItem("role") || "tenant";
     const activeTenant = JSON.parse(localStorage.getItem("activeTenant") || "null");
-    const hasSavedRoomSettings = localStorage.getItem("roomSettings") !== null;
-    const roomSettings = JSON.parse(localStorage.getItem("roomSettings") || "{}");
-
-    if (hasSavedRoomSettings) {
-        Object.keys(maxSlots).forEach(room => {
-            delete maxSlots[room];
-            delete rentValues[room];
-        });
-    }
+const hasSavedRoomSettings = bhKey && localStorage.getItem(bhKey + "_roomSettings") !== null;
+    const roomSettings = bhKey && hasSavedRoomSettings ? JSON.parse(localStorage.getItem(bhKey + "_roomSettings") || "{}") : {};
 
     Object.keys(roomSettings).forEach(room => {
         if (!/^room\d+$/.test(room)) {
@@ -147,8 +142,6 @@ window.addEventListener('DOMContentLoaded', () => {
             roomSettings[room] = { capacity: maxSlots[room], rent: rentValues[room] };
         }
     });
-
-    localStorage.setItem("tenants", JSON.stringify(tenants));
 
     const container = document.getElementById("rooms-container");
     const detailPanel = document.getElementById("room-detail");
@@ -315,7 +308,9 @@ window.addEventListener('DOMContentLoaded', () => {
                 rent: rentValues[room] || 1200
             };
         });
-        localStorage.setItem("roomSettings", JSON.stringify(settings));
+        if (bhKey) {
+            localStorage.setItem(bhKey + "_roomSettings", JSON.stringify(settings));
+        }
     }
 
     addRoomBtn?.addEventListener("click", () => {
@@ -347,7 +342,9 @@ window.addEventListener('DOMContentLoaded', () => {
         rentValues[room] = rent;
         tenants[room] = tenants[room] || [];
         saveRoomSettings();
-        localStorage.setItem("tenants", JSON.stringify(tenants));
+        if (bhKey) {
+            localStorage.setItem(bhKey, JSON.stringify(tenants));
+        }
         window.location.reload();
     });
 
@@ -376,7 +373,9 @@ window.addEventListener('DOMContentLoaded', () => {
         delete roomSettings[room];
         delete tenants[room];
         saveRoomSettings();
-        localStorage.setItem("tenants", JSON.stringify(tenants));
+        if (bhKey) {
+            localStorage.setItem(bhKey, JSON.stringify(tenants));
+        }
         window.location.reload();
     });
 
