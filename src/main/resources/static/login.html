@@ -73,6 +73,8 @@
     </div>
 
     <script>
+        const redirectTarget = new URLSearchParams(window.location.search).get("redirect") || "dashboard.html";
+
         document.getElementById("loginForm").addEventListener("submit", function (e) {
             e.preventDefault();
 
@@ -113,7 +115,7 @@
                     }));
                     
                     alert(`Welcome Admin ${foundAdmin.name}!`);
-                    window.location.href = "dashboard.html";
+                    window.location.href = redirectTarget;
                 } else {
                     alert("Invalid Admin credentials!");
                 }
@@ -150,7 +152,7 @@
                     }
 
                     alert("Login Successful! Welcome Tenant!");
-                    window.location.href = "dashboard.html";
+                    window.location.href = redirectTarget;
                 } else {
                     alert("Invalid email or password! Tenant not found.");
                 }

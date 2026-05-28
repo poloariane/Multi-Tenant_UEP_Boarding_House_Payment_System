@@ -17,6 +17,11 @@
 
 <script>
     // Remove ONLY the active session
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("ownerId");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("role");
+    localStorage.removeItem("activeAdmin");
     localStorage.removeItem("activeTenant");
     sessionStorage.clear(); // optional but safe
 
