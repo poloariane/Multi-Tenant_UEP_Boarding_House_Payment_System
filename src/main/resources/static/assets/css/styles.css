@@ -89,8 +89,8 @@ body {
 .dark-mode .topbar .title-link .title img,
 .dark-mode .topbar-buttons a i {
   background-color: var(--bg-navbar) !important;
-  color: var(--text-main)            !important;
-  border-color: var(--border)        !important;
+  color: var(--text-main) !important;
+  border-color: var(--border) !important;
 }
 
 .dark-mode .topbar .title-link {
@@ -102,9 +102,9 @@ body {
 .dark-mode .nav *,
 .dark-mode .nav a,
 .dark-mode .nav a i {
-  background: var(--bg-sidebar)      !important;
-  color: #E5E7EB                     !important;
-  border-color: #2E4B70              !important;
+  background: var(--bg-sidebar) !important;
+  color: #E5E7EB !important;
+  border-color: #2E4B70 !important;
 }
 
 /* ── BUTTONS: keep their own colors, do NOT inherit dark mode ──────── */
@@ -124,22 +124,22 @@ body {
 .dark-mode .signup-btn,
 .dark-mode .cta-buttons .primary-btn,
 .dark-mode .cta-buttons .secondary-btn {
-  background: inherit                !important;
-  color:      inherit                !important;
-  border-color: inherit              !important;
+  background: inherit !important;
+  color: inherit !important;
+  border-color: inherit !important;
 }
 
 .dark-mode .admin-btn,
 .dark-mode .primary-btn,
 .dark-mode .btn-add {
-  background: var(--primary)         !important;
-  color: var(--text-white)            !important;
+  background: var(--primary) !important;
+  color: var(--text-white) !important;
 }
 
 .dark-mode .admin-btn:hover,
 .dark-mode .primary-btn:hover,
 .dark-mode .btn-add:hover {
-  background: var(--primary-hover)   !important;
+  background: var(--primary-hover) !important;
 }
 
 /* ── Main content area: goes dark, text turns white ─────────────────── */
@@ -148,8 +148,8 @@ body {
   background: #1e2228;
 }
 
-.dark-mode .main > *,
-.dark-mode .content > *,
+.dark-mode .main>*,
+.dark-mode .content>*,
 .dark-mode .settings-card,
 .dark-mode .settings-card *,
 .dark-mode .form-box,
@@ -161,7 +161,7 @@ body {
 .dark-mode .card:not(.landing-card):not(.signup-card):not(.login-card),
 .dark-mode .card:not(.landing-card):not(.signup-card):not(.login-card) * {
   color: #e5e7eb !important;
-  border-color: #374151              !important;
+  border-color: #374151 !important;
 }
 
 .dark-mode .settings-card,
@@ -169,8 +169,8 @@ body {
 .dark-mode .payment-form,
 .dark-mode .profile-card,
 .dark-mode .card:not(.landing-card):not(.signup-card):not(.login-card) {
-  background: #1a1d23  !important;
-  box-shadow: none     !important;
+  background: #1a1d23 !important;
+  box-shadow: none !important;
 }
 
 /* inputs inside .main */
@@ -180,8 +180,8 @@ body {
 .dark-mode .content input,
 .dark-mode .content select,
 .dark-mode .content textarea {
-  background: #2d323c  !important;
-  color: #e5e7eb       !important;
+  background: #2d323c !important;
+  color: #e5e7eb !important;
   border-color: #374151 !important;
 }
 
@@ -191,7 +191,7 @@ body {
 .dark-mode .content input:focus,
 .dark-mode .content select:focus,
 .dark-mode .content textarea:focus {
-  border-color: var(--input-focus)   !important;
+  border-color: var(--input-focus) !important;
   box-shadow: 0 0 0 4px var(--input-ring) !important;
 }
 
@@ -199,7 +199,7 @@ body {
 .dark-mode .main table thead th,
 .dark-mode .main .search-table thead th {
   background: #2d323c !important;
-  color: #e5e7eb       !important;
+  color: #e5e7eb !important;
   border-color: #374151 !important;
 }
 
@@ -218,7 +218,7 @@ body {
 .dark-mode .main .search-box,
 .dark-mode .content .search-bar,
 .dark-mode .content .search-box {
-  background: #2d323c  !important;
+  background: #2d323c !important;
   border-color: #374151 !important;
 }
 
@@ -226,8 +226,8 @@ body {
 .dark-mode .main .search-box input,
 .dark-mode .content .search-bar input,
 .dark-mode .content .search-box input {
-  background: #2d323c  !important;
-  color: #e5e7eb       !important;
+  background: #2d323c !important;
+  color: #e5e7eb !important;
 }
 
 /* muted / secondary text in .main */
@@ -240,8 +240,8 @@ body {
 
 /* filter buttons in .main — keep primary accent on hover, text above */
 .dark-mode .main .filters button {
-  background: #2d323c  !important;
-  color: #e5e7eb       !important;
+  background: #2d323c !important;
+  color: #e5e7eb !important;
   border-color: #374151 !important;
 }
 
@@ -292,7 +292,7 @@ body {
 /* dashboard footer stays on light body bg — move outside main */
 .dark-mode .dashboard-footer {
   background: #1a1d23 !important;
-  color: #e5e7eb       !important;
+  color: #e5e7eb !important;
 }
 
 .dark-mode .dashboard-footer p {
@@ -598,7 +598,7 @@ button.secondary:hover {
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.95), var(--bg-card));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), var(--bg-card));
   border: 1px solid rgba(8, 127, 140, 0.14);
   border-radius: 20px;
   box-shadow: 0 20px 42px rgba(8, 40, 61, 0.08);
@@ -654,19 +654,54 @@ button.secondary:hover {
 }
 
 /* ── Notification card variants ─────────────────────────────────── */
-.card.success { border-left: 4px solid var(--success); }
-.card.warning { border-left: 4px solid var(--warning); }
-.card.danger  { border-left: 4px solid var(--danger); }
-.card.info    { border-left: 4px solid var(--info); }
-.card.gray    { border-left: 4px solid var(--text-muted); }
+.card.success {
+  border-left: 4px solid var(--success);
+}
+
+.card.warning {
+  border-left: 4px solid var(--warning);
+}
+
+.card.danger {
+  border-left: 4px solid var(--danger);
+}
+
+.card.info {
+  border-left: 4px solid var(--info);
+}
+
+.card.gray {
+  border-left: 4px solid var(--text-muted);
+}
 
 /* Icons inside each variant — bright on a neutral card */
-.card i { color: var(--text-muted); font-size: 1.3rem; min-width: 28px; text-align: center; margin-top: 2px; }
-.card.success i { color: var(--success); }
-.card.warning i { color: var(--warning); }
-.card.danger  i { color: var(--danger); }
-.card.info    i { color: var(--info); }
-.card.gray    i { color: var(--text-muted); }
+.card i {
+  color: var(--text-muted);
+  font-size: 1.3rem;
+  min-width: 28px;
+  text-align: center;
+  margin-top: 2px;
+}
+
+.card.success i {
+  color: var(--success);
+}
+
+.card.warning i {
+  color: var(--warning);
+}
+
+.card.danger i {
+  color: var(--danger);
+}
+
+.card.info i {
+  color: var(--info);
+}
+
+.card.gray i {
+  color: var(--text-muted);
+}
 
 /* Notification card internals */
 .notif-header {
@@ -708,10 +743,12 @@ button.secondary:hover {
   margin-left: 8px;
   white-space: nowrap;
 }
+
 .notif-badge.overdue {
   background: rgba(220, 38, 38, 0.10);
   color: var(--danger);
 }
+
 .notif-badge.due {
   background: rgba(245, 158, 11, 0.12);
   color: var(--warning);
@@ -722,6 +759,7 @@ button.secondary:hover {
   border-left-color: var(--primary);
   box-shadow: 0 0 0 1px rgba(8, 127, 140, 0.10);
 }
+
 .card.unread::before {
   content: "";
   position: absolute;
@@ -732,6 +770,7 @@ button.secondary:hover {
   border-radius: 50%;
   background: var(--primary);
 }
+
 .card {
   position: relative;
 }
@@ -833,10 +872,12 @@ button.secondary:hover {
   align-items: center;
   gap: 12px;
 }
+
 .notif-empty i {
   font-size: 2.8rem;
   color: var(--border-dark);
 }
+
 .notif-empty p {
   margin: 0;
   font-size: 1rem;
@@ -1083,7 +1124,7 @@ button.secondary:hover {
   width: 300px;
   height: 100px;
   border-radius: 18px;
-  background: rgba(255,255,255,0.18);
+  background: rgba(255, 255, 255, 0.18);
   padding: .5px;
   object-fit: contain;
 }
@@ -1093,7 +1134,7 @@ button.secondary:hover {
   font-size: 0.92rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.8);
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .login-side h1 {
@@ -1108,7 +1149,7 @@ button.secondary:hover {
   font-family: 'Poppins', sans-serif;
   line-height: 1.8;
   max-width: 470px;
-  color: rgba(255,255,255,0.78);
+  color: rgba(255, 255, 255, 0.78);
 }
 
 .feature-list {
@@ -1129,7 +1170,7 @@ button.secondary:hover {
   min-height: 34px;
   display: grid;
   place-items: center;
-  background: rgba(255,255,255,0.16);
+  background: rgba(255, 255, 255, 0.16);
   border-radius: 12px;
 }
 
@@ -1426,13 +1467,20 @@ button.secondary:hover {
   background-size: 400% 400%;
   animation: gradientShift 15s ease infinite;
   min-height: 100vh;
-  color: var(--text-white);
 }
 
 @keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .hero {
@@ -1492,7 +1540,7 @@ button.secondary:hover {
   line-height: 1.1;
   margin: 0 0 1.5rem 0;
   color: white;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .hero-description {
@@ -1630,7 +1678,7 @@ button.secondary:hover {
 
 .tenant-btn.active {
   background: var(--bg-surface);
-  box-shadow: 0 6px 12px rgba(15,23,42,0.04);
+  box-shadow: 0 6px 12px rgba(15, 23, 42, 0.04);
   border-left: 4px solid var(--primary);
 }
 
@@ -1656,20 +1704,35 @@ button.secondary:hover {
   padding: 18px;
   margin-bottom: 18px;
   display: block;
-  border-left: 6px solid rgba(0,0,0,0.08);
+  border-left: 6px solid rgba(0, 0, 0, 0.08);
 }
 
-.history-card p { margin: 8px 0; }
-.history-card p strong { display:block; font-weight:800; margin-bottom:8px; }
+.history-card p {
+  margin: 8px 0;
+}
 
-.history-card .paid { color: var(--success); font-weight:700; }
-.history-card .unpaid { color: var(--danger); font-weight:700; }
+.history-card p strong {
+  display: block;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.history-card .paid {
+  color: var(--success);
+  font-weight: 700;
+}
+
+.history-card .unpaid {
+  color: var(--danger);
+  font-weight: 700;
+}
 
 .history-container {
   display: flex;
   gap: 28px;
   align-items: stretch;
-  min-height: 420px; /* matches .history-panel min-height */
+  min-height: 420px;
+  /* matches .history-panel min-height */
 }
 
 .history-left {
@@ -1825,8 +1888,15 @@ button.secondary:hover {
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-10px) rotate(2deg); }
+
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-10px) rotate(2deg);
+  }
 }
 
 /* Sections */
@@ -2314,7 +2384,8 @@ button.secondary:hover {
   height: 100%;
 }
 
-.signup-form-card, .login-form-card {
+.signup-form-card,
+.login-form-card {
   position: relative;
   width: 100%;
   max-width: 400px;
@@ -2327,7 +2398,8 @@ button.secondary:hover {
   border-left: 6px solid var(--accent);
 }
 
-.signup-header h2, .login-header h2 {
+.signup-header h2,
+.login-header h2 {
   font-family: 'Poppins', sans-serif;
   font-size: 1.75rem;
   font-weight: 700;
@@ -2336,7 +2408,8 @@ button.secondary:hover {
   text-align: center;
 }
 
-.signup-header p, .login-header p {
+.signup-header p,
+.login-header p {
   color: var(--text-secondary);
   text-align: center;
   margin: 0 0 2rem 0;
@@ -2617,7 +2690,6 @@ button.secondary:hover {
 
 .login-page .login-box {
   width: 100%;
-  background: transparent;
   margin: 0;
   padding: 40px;
   border-radius: 0;
@@ -2957,10 +3029,21 @@ button.secondary:hover {
     gap: 8px;
   }
 
-  h1 { font-size: 1.5rem; }
-  h2 { font-size: 1.25rem; }
-  h3 { font-size: 1.1rem; }
-  h4 { font-size: 1rem; }
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+  }
+
+  h3 {
+    font-size: 1.1rem;
+  }
+
+  h4 {
+    font-size: 1rem;
+  }
 
   button,
   .button,
@@ -3063,51 +3146,58 @@ button.secondary:hover {
 /* ========================================
     RESPONSIVE DESIGN - EXTRA SMALL (320px)
     ======================================== */
- 
- @media (max-width: 320px) {
-   .topbar,
-   .header {
-     padding: 8px;
-   }
- 
-   .title {
-     font-size: 0.75rem;
-   }
- 
-   .title img {
-     display: none;
-   }
- 
-   .topbar-buttons .btn-text {
-     display: none;
-   }
- 
-   .topbar-buttons .btn-add,
-   .topbar-buttons .btn-danger {
-     padding: 8px !important;
-     min-width: 40px;
-   }
- 
-   button,
-   .button {
-     padding: 8px;
-     font-size: 0.8rem;
-   }
- 
-   .main,
-   .content {
-     padding: 8px;
-   }
- 
-   h1 { font-size: 1.3rem; }
-   h2 { font-size: 1.1rem; }
- }
+
+@media (max-width: 320px) {
+
+  .topbar,
+  .header {
+    padding: 8px;
+  }
+
+  .title {
+    font-size: 0.75rem;
+  }
+
+  .title img {
+    display: none;
+  }
+
+  .topbar-buttons .btn-text {
+    display: none;
+  }
+
+  .topbar-buttons .btn-add,
+  .topbar-buttons .btn-danger {
+    padding: 8px !important;
+    min-width: 40px;
+  }
+
+  button,
+  .button {
+    padding: 8px;
+    font-size: 0.8rem;
+  }
+
+  .main,
+  .content {
+    padding: 8px;
+  }
+
+  h1 {
+    font-size: 1.3rem;
+  }
+
+  h2 {
+    font-size: 1.1rem;
+  }
+}
 
 /* ========================================
    PRINT STYLES
    ======================================== */
 
 @media print {
+
   .topbar,
   .sidebar,
   .nav,
@@ -3513,7 +3603,7 @@ img[style*="border-radius"] {
 .day-box.today {
   background: var(--primary);
   color: #fff;
-  border-color: rgba(255,255,255,0.3);
+  border-color: rgba(255, 255, 255, 0.3);
   box-shadow: 0 10px 24px rgba(11, 114, 133, 0.2);
 }
 
@@ -3698,7 +3788,7 @@ img[style*="border-radius"] {
   border-bottom-color: var(--primary-hover);
 }
 
- /* ========================================
+/* ========================================
     END ABOUT PAGE
     ======================================== */
 
@@ -3823,13 +3913,13 @@ img[style*="border-radius"] {
   .admin-view {
     padding: 12px;
   }
-  
+
   .admin-view table th,
   .admin-view table td {
     padding: 8px 10px;
     font-size: 0.85rem;
   }
-  
+
   .admin-view .receipt-img {
     width: 80px;
     max-height: 60px;
@@ -3840,17 +3930,17 @@ img[style*="border-radius"] {
   .admin-view {
     padding: 10px;
   }
-  
+
   .admin-view table {
     min-width: 500px;
   }
-  
+
   .admin-view table th,
   .admin-view table td {
     padding: 6px 8px;
     font-size: 0.8rem;
   }
-  
+
   .admin-view .receipt-img {
     width: 65px;
     max-height: 50px;
@@ -4085,18 +4175,18 @@ img[style*="border-radius"] {
   border-radius: 50%;
   background: #fff;
   transition: all 0.25s ease;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
-.toggle-switch input:checked + .toggle-slider {
+.toggle-switch input:checked+.toggle-slider {
   background: var(--primary);
 }
 
-.toggle-switch input:checked + .toggle-slider::before {
+.toggle-switch input:checked+.toggle-slider::before {
   transform: translateX(20px);
 }
 
-.toggle-switch input:focus-visible + .toggle-slider {
+.toggle-switch input:focus-visible+.toggle-slider {
   box-shadow: 0 0 0 3px rgba(8, 127, 140, 0.25);
 }
 
@@ -4155,4 +4245,179 @@ td[style*="color:red"] {
   margin-top: 0;
   margin-bottom: 24px;
   color: var(--text);
+}
+
+/* Additional fine-tuning for about landing without touching original about.html */
+.about-landing-hero {
+  background: linear-gradient(135deg, #087F8C 0%, #1E3A5F 100%);
+  padding: 4rem 0 2rem 0;
+  margin-bottom: 0;
+}
+
+.about-landing-hero .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.about-landing-hero h1 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 3rem;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.about-landing-hero .hero-sub {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 700px;
+  line-height: 1.5;
+}
+
+.developer-spotlight {
+  background: var(--bg-main);
+  padding: 4rem 0;
+}
+
+.developer-grid-6 {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.developer-card-full {
+  background: white;
+  border-radius: 24px;
+  padding: 2rem 1.8rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(8, 127, 140, 0.12);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.05);
+}
+
+.developer-card-full:hover {
+  transform: translateY(-6px);
+  border-color: var(--primary);
+  box-shadow: 0 20px 35px rgba(8, 127, 140, 0.12);
+}
+
+.dev-avatar-large {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 1.2rem;
+  background: linear-gradient(145deg, var(--primary), var(--secondary));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  color: white;
+  box-shadow: 0 8px 18px rgba(8, 127, 140, 0.25);
+}
+
+.developer-card-full h3 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--secondary);
+  margin-bottom: 0.25rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+.developer-role-badge {
+  display: inline-block;
+  background: rgba(8, 127, 140, 0.12);
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.9rem;
+  border-radius: 30px;
+  margin-bottom: 1rem;
+  letter-spacing: 0.3px;
+}
+
+.developer-bio-short {
+  color: var(--text-secondary);
+  line-height: 1.5;
+  font-size: 0.9rem;
+  margin: 1rem 0 0.5rem;
+}
+
+.badge-stack {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.badge-stack span {
+  background: var(--bg-surface-alt);
+  padding: 4px 12px;
+  border-radius: 30px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.mission-quote {
+  background: linear-gradient(120deg, #f9fafc, #ffffff);
+  border-radius: 32px;
+  padding: 2.5rem;
+  margin: 2rem 0;
+  border-left: 6px solid var(--accent);
+  text-align: center;
+}
+
+.btn-back-landing {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: white;
+  color: var(--primary);
+  padding: 0.8rem 2rem;
+  border-radius: 60px;
+  font-weight: 700;
+  transition: 0.2s;
+  margin-top: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(6px);
+  color: white;
+}
+
+.btn-back-landing:hover {
+  background: var(--accent);
+  color: var(--secondary);
+  border-color: var(--accent);
+}
+
+@media (max-width: 768px) {
+  .about-landing-hero h1 {
+    font-size: 2.2rem;
+  }
+
+  .developer-grid-6 {
+    gap: 1.2rem;
+  }
+}
+
+.stat-badge-group {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin: 1.5rem 0;
+  flex-wrap: wrap;
+}
+
+.stat-badge {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  padding: 0.5rem 1.2rem;
+  border-radius: 60px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: white;
 }
