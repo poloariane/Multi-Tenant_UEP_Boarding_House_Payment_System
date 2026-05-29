@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,19 +8,24 @@
     <!-- Google Fonts + Font Awesome + main styles -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/about-landing.css">
 </head>
-<body class="landing-page" style="background: var(--bg-main); animation: none; background: linear-gradient(145deg, #F5F7FA 0%, #eef2f8 100%);">
-    <!-- HERO SECTION (Landing style but dedicated to the team) -->
-    <section class="about-landing-hero" style="background: linear-gradient(125deg, #0B3B4F 0%, #1E3A5F 100%);">
+
+<body class="landing-page about-landing-body">
+    <!-- HERO SECTION -->
+    <section class="about-landing-hero">
         <div class="container">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; margin-bottom: 20px;">
+            <div class="hero-header">
                 <div>
-                    <p class="eyebrow" style="color: #F4B400; margin-bottom: 0.5rem;">MEET THE MINDS BEHIND THE SYSTEM</p>
-                    <h1 style="color: white;">The Development Team</h1>
-                    <p class="hero-sub">Six passionate BSIT students from the University of Eastern Philippines who built the Multi-Tenant Boarding House Payment System from the ground up.</p>
+                    <p class="eyebrow">MEET THE MINDS BEHIND THE SYSTEM</p>
+                    <h1>The Development Team</h1>
+                    <p class="hero-sub">Six passionate BSIT students from the University of Eastern Philippines who
+                        built the Multi-Tenant Boarding House Payment System from the ground up.</p>
                 </div>
                 <a href="index.html" class="btn-back-landing">
                     <i class="fas fa-arrow-left"></i> Back to Home
@@ -33,120 +39,115 @@
         </div>
     </section>
 
-    <!-- Main content: 6 developers showcase (exactly as described, using global CSS) -->
+    <!-- Main content: 6 developers showcase -->
     <div class="developer-spotlight">
         <div class="container">
-            <div class="section-header" style="margin-bottom: 2rem;">
-                <h2 style="color: var(--secondary);">Developers</h2>
+            <div class="section-header">
+                <h2>Developers</h2>
                 <p>Dedicated, innovative, and driven — these six developers turned a vision into reality</p>
             </div>
             <div class="developer-grid-6">
-                <!-- Developer 1: Abundo, Clarissa Mae T. -->
+                <!-- Developer 1 -->
                 <div class="developer-card-full">
                     <div class="dev-avatar-large">
-                        <i class="fas fa-user-circle"></i>
+                        <img src="assets/photos/abundo.jpg" alt="developer-pic">
                     </div>
                     <h3>Clarissa Mae T. Abundo</h3>
-                    <div class="developer-role-badge">Frontend & UI Specialist</div>
-                    <p class="developer-bio-short">Designed responsive interfaces and polished user interactions. Ensured the system feels intuitive across all devices.</p>
+                    <div class="developer-role-badge">BSIT-2B</div>
                     <div class="badge-stack">
-                        <span>HTML/CSS</span>
-                        <span>JavaScript</span>
-                        <span>UI/UX</span>
+                        <span>Backend</span>
                     </div>
                 </div>
-                <!-- Developer 2: Polo, Ariane C. -->
+                <!-- Developer 2 -->
                 <div class="developer-card-full">
                     <div class="dev-avatar-large">
-                        <i class="fas fa-user-circle"></i>
+                         <img src="assets/photos/polo.jpeg" alt="developer-pic">
                     </div>
                     <h3>Ariane C. Polo</h3>
-                    <div class="developer-role-badge">Backend & Logic Architect</div>
-                    <p class="developer-bio-short">Built the core business logic, payment validation, and localStorage orchestration. Focused on stability and data integrity.</p>
+                    <div class="developer-role-badge">BSIT-2B</div>
                     <div class="badge-stack">
-                        <span>LocalStorage API</span>
-                        <span>Data modeling</span>
-                        <span>Payment flow</span>
+                        <span>Backend</span>
                     </div>
                 </div>
-                <!-- Developer 3: Senar, Jennie N. -->
+                <!-- Developer 3 -->
                 <div class="developer-card-full">
                     <div class="dev-avatar-large">
-                        <i class="fas fa-user-circle"></i>
+                         <img src="assets/photos/senar.jpeg" alt="developer-pic">
                     </div>
                     <h3>Jennie N. Senar</h3>
-                    <div class="developer-role-badge">QA & System Tester</div>
-                    <p class="developer-bio-short">Led rigorous testing, cross-browser validation, and bug tracking to guarantee a seamless, error-free experience for admins and tenants.</p>
+                    <div class="developer-role-badge">BSIT-2B</div>
                     <div class="badge-stack">
-                        <span>Manual Testing</span>
-                        <span>Edge cases</span>
-                        <span>UX consistency</span>
+                        <span>Backend</span>
                     </div>
                 </div>
-                <!-- Developer 4: Dela Cerna, Nicole M. -->
+                <!-- Developer 4 -->
                 <div class="developer-card-full">
                     <div class="dev-avatar-large">
-                        <i class="fas fa-user-circle"></i>
+                         <img src="assets/photos/delacerna.jpeg" alt="developer-pic">
                     </div>
                     <h3>Nicole M. Dela Cerna</h3>
-                    <div class="developer-role-badge">Database & Reports Lead</div>
-                    <p class="developer-bio-short">Structured tenant data models, payment records, and analytics dashboards. Ensured accurate financial summaries and reports.</p>
+                    <div class="developer-role-badge">BSIT-2B</div>
                     <div class="badge-stack">
-                        <span>Data aggregation</span>
-                        <span>Reporting engine</span>
-                        <span>Analytics</span>
+                        <span>Frontend</span>
                     </div>
                 </div>
-                <!-- Developer 5: Cebuano, Irene A. -->
+                <!-- Developer 5 -->
                 <div class="developer-card-full">
                     <div class="dev-avatar-large">
-                        <i class="fas fa-user-circle"></i>
+                         <img src="assets/photos/cebuano.jpeg" alt="developer-pic">
                     </div>
                     <h3>Irene A. Cebuano</h3>
-                    <div class="developer-role-badge">Security & Auth Module</div>
-                    <p class="developer-bio-short">Implemented role-based access, login/signup flows, and multi-tenant isolation. Safeguarded sensitive payment information.</p>
+                    <div class="developer-role-badge">BSIT-2B</div>
                     <div class="badge-stack">
-                        <span>Authentication</span>
-                        <span>Role management</span>
-                        <span>Data privacy</span>
+                        <span>Frontend</span>
                     </div>
                 </div>
-                <!-- Developer 6: Surio, Queensanta B. -->
+                <!-- Developer 6 -->
                 <div class="developer-card-full">
                     <div class="dev-avatar-large">
-                        <i class="fas fa-user-circle"></i>
+                        <img src="assets/photos/surio.jpeg" alt="developer-pic">
                     </div>
                     <h3>Queensanta B. Surio</h3>
-                    <div class="developer-role-badge">UI Integration & DevOps</div>
-                    <p class="developer-bio-short">Unified the design system, managed deployment previews, and ensured the platform’s smooth operation on any modern browser.</p>
+                    <div class="developer-role-badge">BSIT-2B</div>
                     <div class="badge-stack">
-                        <span>Responsive design</span>
-                        <span>CSS architecture</span>
-                        <span>Asset optimization</span>
+                        <span>Frontend</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Mission / additional info block (matches system description) -->
+            <!-- Mission / additional info block -->
             <div class="mission-quote">
-                <i class="fas fa-quote-left" style="font-size: 2rem; color: var(--primary); opacity: 0.6; margin-bottom: 0.8rem; display: inline-block;"></i>
-                <h3 style="font-family: 'Poppins', sans-serif; font-weight: 700; margin: 0.5rem 0;">Built for efficiency, transparency, and growth</h3>
-                <p style="max-width: 750px; margin: 1rem auto 0; color: var(--text-secondary);">The Multi-Tenant Boarding House Payment System simplifies rent collection, automates reminders, and provides real-time financial insights — all backed by a team that cares about modern property management.</p>
-                <div style="margin-top: 1.8rem;">
-                </div>
+                <i class="fas fa-quote-left"></i>
+                <h3>Built for efficiency, transparency, and growth</h3>
+                <p>The Multi-Tenant Boarding House Payment System simplifies rent collection, automates reminders, and provides real-time financial insights — all backed by a team that cares about modern property management.</p>
             </div>
 
             <!-- Technology stack appreciation -->
-            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 32px; margin-top: 2rem; text-align: center;">
-                <div><i class="fas fa-crown" style="color: var(--accent); font-size: 1.8rem;"></i><br><strong style="display: block; margin-top: 8px;">6 developers</strong><span style="color: var(--text-muted);">One mission</span></div>
-                <div><i class="fas fa-laptop-code" style="color: var(--accent); font-size: 1.8rem;"></i><br><strong style="display: block; margin-top: 8px;">Modern stack</strong><span style="color: var(--text-muted);">HTML5, CSS3, JS (ES6)</span></div>
-                <div><i class="fas fa-chart-line" style="color: var(--accent); font-size: 1.8rem;"></i><br><strong style="display: block; margin-top: 8px;">Real-time reports</strong><span style="color: var(--text-muted);">Payment trends & analytics</span></div>
+            <div class="tech-stack">
+                <div>
+                    <i class="fas fa-crown"></i>
+                    <br>
+                    <strong>6 developers</strong>
+                    <span>One mission</span>
+                </div>
+                <div>
+                    <i class="fas fa-laptop-code"></i>
+                    <br>
+                    <strong>Modern stack</strong>
+                    <span>HTML5, CSS3, JS (ES6)</span>
+                </div>
+                <div>
+                    <i class="fas fa-chart-line"></i>
+                    <br>
+                    <strong>Real-time reports</strong>
+                    <span>Payment trends & analytics</span>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Simple footer that mimics original style but light -->
-    <footer class="footer" style="background: var(--secondary); margin-top: 2rem;">
+    <!-- Footer -->
+    <footer class="footer about-landing-footer">
         <div class="container">
             <div class="footer-content">
                 <div class="footer-brand">
@@ -193,32 +194,8 @@
         </div>
     </footer>
 
-    <!-- simple scroll & sidebar-active is not mandatory but ensuring global sidebar-active won't break anything -->
     <script src="assets/js/sidebar-active.js"></script>
-    <script>
-        // (Optional) ensure any dynamic role remains intact, but this about_landing is standalone.
-        // No modifications to existing about.html. Just visual polish and developer display.
-        document.addEventListener("DOMContentLoaded", () => {
-            // add any interactive enhancements like simple hover logs if needed; but already done.
-            const cards = document.querySelectorAll('.developer-card-full');
-            cards.forEach((card, idx) => {
-                card.style.setProperty('animation', 'fadeInUp 0.4s ease forwards');
-                card.style.animationDelay = `${idx * 0.05}s`;
-                card.style.opacity = '0';
-            });
-            const styleAnim = document.createElement('style');
-            styleAnim.textContent = `
-                @keyframes fadeInUp {
-                    from { opacity: 0; transform: translateY(18px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-                .developer-card-full {
-                    opacity: 0;
-                    animation: fadeInUp 0.45s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
-                }
-            `;
-            document.head.appendChild(styleAnim);
-        });
-    </script>
+    <script src="assets/js/about-landing.js"></script>
 </body>
+
 </html>

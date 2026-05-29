@@ -16,7 +16,7 @@
 
 <body class="login-page">
 
-<a href="index.html" class="back-arrow" title="Back to Home">&larr;</a>
+    <a href="index.html" class="back-arrow" title="Back to Home">&larr;</a>
     <div class="login-card">
         <div class="login-side">
             <div class="brand">
@@ -105,15 +105,15 @@
                 if (foundAdmin) {
                     localStorage.setItem("activeAdmin", JSON.stringify(foundAdmin));
                     localStorage.setItem("role", "admin");
-                    
+
                     // Set bhInfo for multi-tenant isolation
                     const bhKey = 'tenants_' + foundAdmin.bhName.toLowerCase().replace(/\s+/g, '_');
-                    localStorage.setItem('bhInfo', JSON.stringify({ 
-                        name: foundAdmin.bhName, 
-                        address: foundAdmin.bhAddress, 
-                        key: bhKey 
+                    localStorage.setItem('bhInfo', JSON.stringify({
+                        name: foundAdmin.bhName,
+                        address: foundAdmin.bhAddress,
+                        key: bhKey
                     }));
-                    
+
                     alert(`Welcome Admin ${foundAdmin.name}!`);
                     window.location.href = redirectTarget;
                 } else {
@@ -134,10 +134,11 @@
                     if (key.startsWith("tenants_")) {
                         let tenants = JSON.parse(localStorage.getItem(key)) || {};
                         for (let room in tenants) {
+                            // Make sure each tenant in the array is an object
                             tenants[room].forEach(t => {
                                 if (t.email === email && t.password === password) {
                                     foundTenant = { ...t, room: room };
-                                    foundBhKey = t.bhKey || key;
+                                    foundBhKey = t.bhKey || key;  // This should work
                                 }
                             });
                         }

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <script src="assets/js/auth-guard.js"></script>
     <meta charset="UTF-8">
@@ -181,7 +182,13 @@
             const bhInfo = JSON.parse(localStorage.getItem("bhInfo") || "{}");
             const bhKey = bhInfo.key;
 
-            let tenants = bhKey ? JSON.parse(localStorage.getItem(bhKey)) || {} : {};
+            // FIX: Make sure bhKey exists before proceeding
+            if (!bhKey) {
+                alert("Error: Boarding house information missing. Please re-login as admin.");
+                return;
+            }
+
+            let tenants = JSON.parse(localStorage.getItem(bhKey)) || {};
 
             if (!tenants[room]) tenants[room] = [];
 
@@ -202,7 +209,7 @@
                 password,
                 rent,
                 startDate,
-                bhKey: bhKey
+                bhKey: bhKey  // This should now be properly defined
             });
 
             localStorage.setItem(bhKey, JSON.stringify(tenants));
@@ -221,22 +228,23 @@
             side.classList.toggle("show");
         });
     </script>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    const role = localStorage.getItem("role") || "tenant";
-    if (role === "admin") {
-        const payRentLink = document.querySelector('a[href="pay-rent.html"]');
-        if (payRentLink) {
-            // Keep the icon, just change the text
-            const icon = payRentLink.querySelector("i");
-            payRentLink.textContent = "Tenant Payments";
-            if (icon) {
-                payRentLink.prepend(icon); // Re-add the icon
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const role = localStorage.getItem("role") || "tenant";
+            if (role === "admin") {
+                const payRentLink = document.querySelector('a[href="pay-rent.html"]');
+                if (payRentLink) {
+                    // Keep the icon, just change the text
+                    const icon = payRentLink.querySelector("i");
+                    payRentLink.textContent = "Tenant Payments";
+                    if (icon) {
+                        payRentLink.prepend(icon); // Re-add the icon
+                    }
+                }
             }
-        }
-    }
-});
-</script>
-  <script src="assets/js/sidebar-active.js"></script>
+        });
+    </script>
+    <script src="assets/js/sidebar-active.js"></script>
 </body>
+
 </html>

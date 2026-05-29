@@ -3996,7 +3996,7 @@ img[style*="border-radius"] {
   border-color: var(--primary);
 }
 
-.dev-avatar {
+.dev-avatar img {
   width: 72px;
   height: 72px;
   margin: 0 auto 14px;
@@ -4304,7 +4304,7 @@ td[style*="color:red"] {
   box-shadow: 0 20px 35px rgba(8, 127, 140, 0.12);
 }
 
-.dev-avatar-large {
+.dev-avatar-large img {
   width: 100px;
   height: 100px;
   margin: 0 auto 1.2rem;
@@ -4420,4 +4420,287 @@ td[style*="color:red"] {
   font-weight: 500;
   font-size: 0.9rem;
   color: white;
+}
+
+/* About Landing Page - Separated Styles */
+
+.about-landing-body {
+    background: var(--bg-main);
+    background: linear-gradient(135deg, rgb(8, 127, 140) 0%, rgb(30, 58, 95) 50%, rgb(244, 180, 0) 100%) 0% 0% / 400% 400%;
+    animation: 15s ease 0s infinite normal none running gradientShift;
+}
+
+/* Hero Section */
+.about-landing-hero {
+    background: linear-gradient(125deg, #0B3B4F 0%, #1E3A5F 100%);
+    padding: 60px 0 40px;
+    position: relative;
+}
+
+.hero-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.about-landing-hero .eyebrow {
+    color: #F4B400;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.about-landing-hero h1 {
+    color: white;
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.hero-sub {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 1.125rem;
+    max-width: 600px;
+}
+
+.btn-back-landing {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(4px);
+    padding: 10px 20px;
+    border-radius: 40px;
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-back-landing:hover {
+    background: rgb(244, 180, 0);
+    transform: translateX(-4px);
+}
+
+.stat-badge-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 30px;
+}
+
+.stat-badge {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(4px);
+    padding: 8px 18px;
+    border-radius: 40px;
+    font-size: 0.875rem;
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.stat-badge i {
+    color: #F4B400;
+}
+
+/* Developer Spotlight Section */
+.developer-spotlight {
+    padding: 60px 0 40px;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.section-header h2 {
+    color: var(--secondary);
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.section-header p {
+    color: var(--text-secondary);
+}
+
+/* Developer Grid */
+.developer-grid-6 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin-bottom: 50px;
+}
+
+.developer-card-full {
+    background: white;
+    border-radius: 20px;
+    padding: 30px 20px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.developer-card-full:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+.dev-avatar-large {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid var(--primary);
+}
+
+.dev-avatar-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.developer-card-full h3 {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+    color: var(--secondary);
+}
+
+.developer-role-badge {
+    display: inline-block;
+    background: #e8f0fe;
+    color: var(--primary);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.badge-stack {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.badge-stack span {
+    background: #f0f0f0;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    color: #555;
+}
+
+/* Mission Quote */
+.mission-quote {
+    text-align: center;
+    padding: 40px 20px;
+    background: white;
+    border-radius: 24px;
+    margin: 30px 0;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.mission-quote .fa-quote-left {
+    font-size: 2rem;
+    color: var(--primary);
+    opacity: 0.6;
+    margin-bottom: 0.8rem;
+    display: inline-block;
+}
+
+.mission-quote h3 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    margin: 0.5rem 0;
+    color: var(--secondary);
+}
+
+.mission-quote p {
+    max-width: 750px;
+    margin: 1rem auto 0;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* Technology Stack */
+.tech-stack {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 32px;
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.tech-stack > div {
+    flex: 1;
+    min-width: 150px;
+}
+
+.tech-stack i {
+    color: var(--accent);
+    font-size: 1.8rem;
+}
+
+.tech-stack strong {
+    display: block;
+    margin-top: 8px;
+    color: var(--secondary);
+}
+
+.tech-stack span {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    display: block;
+}
+
+/* Footer */
+.about-landing-footer {
+    background: var(--secondary);
+    margin-top: 2rem;
+}
+
+/* Keyframe Animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.developer-card-full {
+    opacity: 0;
+    animation: fadeInUp 0.45s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .about-landing-hero h1 {
+        font-size: 2rem;
+    }
+    
+    .hero-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .developer-grid-6 {
+        gap: 20px;
+    }
+    
+    .tech-stack {
+        flex-direction: column;
+        gap: 20px;
+    }
 }
