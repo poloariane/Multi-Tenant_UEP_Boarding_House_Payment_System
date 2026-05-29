@@ -129,36 +129,48 @@
                 let foundTenant = null;
                 let foundBhKey = null;
 
-                // search all boarding houses
-                for (let key in localStorage) {
-                    if (key.startsWith("tenants_")) {
-                        let tenants = JSON.parse(localStorage.getItem(key)) || {};
-                        for (let room in tenants) {
-                            // Make sure each tenant in the array is an object
-                            tenants[room].forEach(t => {
-                                if (t.email === email && t.password === password) {
-                                    foundTenant = { ...t, room: room };
-                                    foundBhKey = t.bhKey || key;  // This should work
+                // search all boarding houses in localStorage
+                for (let i = 0; i < localStorage.length; i++) {
+                    let key = localStorage.key(i);
+                    if (key && key.startsWith("tenants_")) {
+                        try {
+                            let tenantsData = JSON.parse(localStorage.getItem(key)) || {};
+
+                            for (let room in tenantsData) {
+                                let roomTenants = tenantsData[room];
+                                if (Array.isArray(roomTenants)) {
+                                    for (let t of roomTenants) {
+                                        if (t && t.email === email && t.password === password) {
+                                            foundTenant = {
+                                                ...t,
+                                                room: room,
+                                                bhKey: key
+                                            };
+                                            foundBhKey = key;
+                                            break;
+                                        }
+                                    }
                                 }
-                            });
+                                if (foundTenant) break;
+                            }
+                        } catch (e) {
+                            console.error("Error parsing key:", key, e);
                         }
+                        if (foundTenant) break;
                     }
                 }
 
                 if (foundTenant) {
                     localStorage.setItem("activeTenant", JSON.stringify(foundTenant));
                     localStorage.setItem("role", "tenant");
-                    if (foundBhKey) {
-                        localStorage.setItem("bhInfo", JSON.stringify({ key: foundBhKey }));
-                    }
+                    localStorage.setItem("bhInfo", JSON.stringify({ key: foundBhKey, name: foundTenant.bhName || "" }));
 
-                    alert("Login Successful! Welcome Tenant!");
+                    alert("Login Successful! Welcome " + (foundTenant.name || "Tenant") + "!");
                     window.location.href = redirectTarget;
                 } else {
-                    alert("Invalid email or password! Tenant not found.");
+                    alert("Invalid email or password! Tenant not found.\n\nMake sure you entered the correct email and password used when the tenant was added.");
                 }
             }
-
         });
     </script>
 

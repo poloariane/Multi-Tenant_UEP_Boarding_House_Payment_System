@@ -203,13 +203,14 @@
             }
 
             tenants[room].push({
-                name,
-                email,
-                contact,
-                password,
-                rent,
-                startDate,
-                bhKey: bhKey  // This should now be properly defined
+                name: name,
+                email: email,
+                contact: contact,
+                password: password,
+                rent: rent,
+                startDate: startDate,
+                room: room,  // ADD THIS - store room with tenant
+                bhKey: bhKey
             });
 
             localStorage.setItem(bhKey, JSON.stringify(tenants));
