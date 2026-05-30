@@ -276,11 +276,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-const ham = document.getElementById("hamburger");
-const side = document.getElementById("sidebar");
-if (ham && side) {
-    ham.addEventListener("click", () => side.classList.toggle("show"));
-}
+    const ham = document.getElementById("hamburger");
+    const side = document.getElementById("sidebar");
+    if (ham && side) {
+        ham.addEventListener("click", () => side.classList.toggle("hidden"));
+    }
 </script>
 
 <script src="assets/js/sidebar-active.js"></script>

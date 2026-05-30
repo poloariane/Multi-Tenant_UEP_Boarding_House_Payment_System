@@ -70,170 +70,180 @@
         </div>
     </div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-
-            // ── Header row click → goes to tenant-history with no tenant selected ──
-            const headerRow = document.querySelector("table thead tr");
-            if (headerRow) {
-                headerRow.style.cursor = "pointer";
-                headerRow.addEventListener("click", () => {
-                    window.location.href = "tenant-history.html";
-                });
-            }
-
-            // ── Role & sidebar restrictions ───────────────────────────────────
-            const role = localStorage.getItem("role") || "tenant";
-            const reportsNav = document.querySelector('a[href="reports.html"]');
-            const notifNav = document.querySelector('a[href="notifications.html"]');
-            if (role === "tenant") {
-                if (reportsNav) reportsNav.style.display = "none";
-                if (notifNav) notifNav.style.display = "none";
-            }
-
-            // ── Role-based sidebar label for pay-rent nav ─────────────────────
-            const payRentNav = document.querySelector('a[href="pay-rent.html"]');
-            if (payRentNav && role === "tenant") {
-                payRentNav.innerHTML = '<i class="fas fa-money-bill-wave"></i> Pay Rent';
-            }
-
-            // ── Build tenant list (admin: all tenants; tenant: self only) ──────
-            const activeTenant = JSON.parse(localStorage.getItem("activeTenant") || "null");
-            const bhInfo = JSON.parse(localStorage.getItem("bhInfo") || "{}");
-            const bhKey = bhInfo.key;
-            const tenantsObj = bhKey ? JSON.parse(localStorage.getItem(bhKey) || "{}") : {};
-            const payments = bhKey 
-                ? JSON.parse(localStorage.getItem(bhKey + "_payments") || "[]")
-                : [];
-            const tbody = document.querySelector("table tbody");
-            if (!tbody) return;
-            tbody.innerHTML = "";
-
-            // Collect tenant names to display
-            let displayTenants = [];
-            if (role === "tenant" && activeTenant?.name) {
-                displayTenants = [activeTenant.name.trim()];
-            } else {
-                Object.keys(tenantsObj)
-                    .sort((a, b) => Number(a.replace("room", "")) - Number(b.replace("room", "")))
-                    .forEach(room => {
-                        (tenantsObj[room] || []).forEach(t => {
-                            displayTenants.push(typeof t === "object" ? t.name : t);
-                        });
-                    });
-            }
-
-            if (displayTenants.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:30px;">No tenants found. Go to <a href="tenant-list.html" style="color:#0271a8;">Tenants</a> to add tenants.</td></tr>`;
-                return;
-            }
-
-            function formatDate(rawDate) {
-                if (!rawDate) return "—";
-                const parsed = new Date(rawDate);
-                if (isNaN(parsed.getTime())) return "—";
-                return parsed.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
-            }
-
-            function getMonthLabel(rawDate) {
-                if (!rawDate) return "—";
-                const date = new Date(rawDate);
-                if (isNaN(date.getTime())) return "—";
-                return date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
-            }
-
-            function buildNameCell(label) {
-                const td = document.createElement("td");
-                const flex = document.createElement("div");
-                flex.style.cssText = "display:flex;align-items:center;gap:10px;position:relative;";
-
-                const btn = document.createElement("button");
-                btn.className = "mark-paid-btn";
-                btn.style.cssText = "display:none;width:25px;height:25px;border-radius:50%;border:none;background:#0271a8;color:white;cursor:pointer;margin-right:5px;";
-                btn.innerHTML = '<i class="fas fa-check"></i>';
-
-                const span = document.createElement("span");
-                span.textContent = label;
-
-                flex.appendChild(btn);
-                flex.appendChild(span);
-                td.appendChild(flex);
-                return td;
-            }
-
-            displayTenants.forEach(name => {
-                const norm = name.trim().toLowerCase();
-                const tenantPays = payments.filter(p => p.name && p.name.trim().toLowerCase() === norm);
-
-                const tr = document.createElement("tr");
-                tr.classList.add("clickable-row");
-
-                if (tenantPays.length === 0) {
-                    tr.appendChild(buildNameCell(name));
-                    const md = document.createElement("td"); md.textContent = "—"; tr.appendChild(md);
-                    const ad = document.createElement("td"); ad.textContent = "—"; tr.appendChild(ad);
-                    const sd = document.createElement("td"); sd.classList.add("unpaid"); sd.textContent = "Unpaid"; tr.appendChild(sd);
-                    const dd = document.createElement("td"); dd.textContent = "—"; tr.appendChild(dd);
-                    tbody.appendChild(tr);
-                    return;
-                }
-
-                const latest = tenantPays.reduce((best, cur) => {
-                    const bd = new Date(best.date || best.dateString || 0);
-                    const cd = new Date(cur.date || cur.dateString || 0);
-                    return cd > bd ? cur : best;
-                });
-
-                tr.appendChild(buildNameCell(name));
-
-                const monthTd = document.createElement("td");
-                monthTd.textContent = getMonthLabel(latest.date);
-                tr.appendChild(monthTd);
-
-                const amountTd = document.createElement("td");
-                amountTd.textContent = `₱${latest.amount}`;
-                tr.appendChild(amountTd);
-
-                const statusTd = document.createElement("td");
-                statusTd.classList.add("paid");
-                statusTd.textContent = "Paid";
-                tr.appendChild(statusTd);
-
-                const dateTd = document.createElement("td");
-                dateTd.textContent = formatDate(latest.date);
-                tr.appendChild(dateTd);
-
-                tbody.appendChild(tr);
-            });
-
-            // Row-level click: entire row navigates to tenant history
-            tbody.querySelectorAll("tr.clickable-row").forEach(row => {
-                row.addEventListener("click", () => {
-                    const nameEl = row.querySelector("td:first-child span");
-                    const name = nameEl ? encodeURIComponent(nameEl.textContent.trim()) : "";
-                    window.location.href = `tenant-history.html?name=${name}`;
-                });
-            });
-        });
-    </script>
-    <script>
-document.addEventListener("DOMContentLoaded", () => {
-    const role = localStorage.getItem("role") || "tenant";
-    const adminBtn = document.querySelector(".admin-btn");
-
-    if (adminBtn) {
-        if (role === "tenant") {
-            adminBtn.textContent = "Profile";
-            adminBtn.href = "profile.html"; 
-        } else {
-            adminBtn.textContent = "Admin";
-            adminBtn.href = "profile.html"; 
-        }
-    }
-});
-</script>
-
-    <script src="assets/js/sidebar-active.js"></script>
+     <script>
+         document.addEventListener("DOMContentLoaded", () => {
+ 
+             // ── Header row click → goes to tenant-history with no tenant selected ──
+             const headerRow = document.querySelector("table thead tr");
+             if (headerRow) {
+                 headerRow.style.cursor = "pointer";
+                 headerRow.addEventListener("click", () => {
+                     window.location.href = "tenant-history.html";
+                 });
+             }
+ 
+             // ── Role & sidebar restrictions ───────────────────────────────────
+             const role = localStorage.getItem("role") || "tenant";
+             const reportsNav = document.querySelector('a[href="reports.html"]');
+             const notifNav = document.querySelector('a[href="notifications.html"]');
+             if (role === "tenant") {
+                 if (reportsNav) reportsNav.style.display = "none";
+                 if (notifNav) notifNav.style.display = "none";
+             }
+ 
+             // ── Role-based sidebar label for pay-rent nav ─────────────────────
+             const payRentNav = document.querySelector('a[href="pay-rent.html"]');
+             if (payRentNav && role === "tenant") {
+                 payRentNav.innerHTML = '<i class="fas fa-money-bill-wave"></i> Pay Rent';
+             }
+ 
+             // ── Build tenant list (admin: all tenants; tenant: self only) ──────
+             const activeTenant = JSON.parse(localStorage.getItem("activeTenant") || "null");
+             const bhInfo = JSON.parse(localStorage.getItem("bhInfo") || "{}");
+             const bhKey = bhInfo.key;
+             const tenantsObj = bhKey ? JSON.parse(localStorage.getItem(bhKey) || "{}") : {};
+             const payments = bhKey 
+                 ? JSON.parse(localStorage.getItem(bhKey + "_payments") || "[]")
+                 : [];
+             const tbody = document.querySelector("table tbody");
+             if (!tbody) return;
+             tbody.innerHTML = "";
+ 
+             // Collect tenant names to display
+             let displayTenants = [];
+             if (role === "tenant" && activeTenant?.name) {
+                 displayTenants = [activeTenant.name.trim()];
+             } else {
+                 Object.keys(tenantsObj)
+                     .sort((a, b) => Number(a.replace("room", "")) - Number(b.replace("room", "")))
+                     .forEach(room => {
+                         (tenantsObj[room] || []).forEach(t => {
+                             displayTenants.push(typeof t === "object" ? t.name : t);
+                         });
+                     });
+             }
+ 
+             if (displayTenants.length === 0) {
+                 tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:30px;">No tenants found. Go to <a href="tenant-list.html" style="color:#0271a8;">Tenants</a> to add tenants.</td></tr>`;
+                 return;
+             }
+ 
+             function formatDate(rawDate) {
+                 if (!rawDate) return "—";
+                 const parsed = new Date(rawDate);
+                 if (isNaN(parsed.getTime())) return "—";
+                 return parsed.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+             }
+ 
+             function getMonthLabel(rawDate) {
+                 if (!rawDate) return "—";
+                 const date = new Date(rawDate);
+                 if (isNaN(date.getTime())) return "—";
+                 return date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+             }
+ 
+             function buildNameCell(label) {
+                 const td = document.createElement("td");
+                 const flex = document.createElement("div");
+                 flex.style.cssText = "display:flex;align-items:center;gap:10px;position:relative;";
+ 
+                 const btn = document.createElement("button");
+                 btn.className = "mark-paid-btn";
+                 btn.style.cssText = "display:none;width:25px;height:25px;border-radius:50%;border:none;background:#0271a8;color:white;cursor:pointer;margin-right:5px;";
+                 btn.innerHTML = '<i class="fas fa-check"></i>';
+ 
+                 const span = document.createElement("span");
+                 span.textContent = label;
+ 
+                 flex.appendChild(btn);
+                 flex.appendChild(span);
+                 td.appendChild(flex);
+                 return td;
+             }
+ 
+             displayTenants.forEach(name => {
+                 const norm = name.trim().toLowerCase();
+                 const tenantPays = payments.filter(p => p.name && p.name.trim().toLowerCase() === norm);
+ 
+                 const tr = document.createElement("tr");
+                 tr.classList.add("clickable-row");
+ 
+                 if (tenantPays.length === 0) {
+                     tr.appendChild(buildNameCell(name));
+                     const md = document.createElement("td"); md.textContent = "—"; tr.appendChild(md);
+                     const ad = document.createElement("td"); ad.textContent = "—"; tr.appendChild(ad);
+                     const sd = document.createElement("td"); sd.classList.add("unpaid"); sd.textContent = "Unpaid"; tr.appendChild(sd);
+                     const dd = document.createElement("td"); dd.textContent = "—"; tr.appendChild(dd);
+                     tbody.appendChild(tr);
+                     return;
+                 }
+ 
+                 const latest = tenantPays.reduce((best, cur) => {
+                     const bd = new Date(best.date || best.dateString || 0);
+                     const cd = new Date(cur.date || cur.dateString || 0);
+                     return cd > bd ? cur : best;
+                 });
+ 
+                 tr.appendChild(buildNameCell(name));
+ 
+                 const monthTd = document.createElement("td");
+                 monthTd.textContent = getMonthLabel(latest.date);
+                 tr.appendChild(monthTd);
+ 
+                 const amountTd = document.createElement("td");
+                 amountTd.textContent = `₱${latest.amount}`;
+                 tr.appendChild(amountTd);
+ 
+                 const statusTd = document.createElement("td");
+                 statusTd.classList.add("paid");
+                 statusTd.textContent = "Paid";
+                 tr.appendChild(statusTd);
+ 
+                 const dateTd = document.createElement("td");
+                 dateTd.textContent = formatDate(latest.date);
+                 tr.appendChild(dateTd);
+ 
+                 tbody.appendChild(tr);
+             });
+ 
+             // Row-level click: entire row navigates to tenant history
+             tbody.querySelectorAll("tr.clickable-row").forEach(row => {
+                 row.addEventListener("click", () => {
+                     const nameEl = row.querySelector("td:first-child span");
+                     const name = nameEl ? encodeURIComponent(nameEl.textContent.trim()) : "";
+                     window.location.href = `tenant-history.html?name=${name}`;
+                 });
+             });
+             
+             // Hamburger toggle
+             const ham = document.getElementById("hamburger");
+             const side = document.getElementById("sidebar");
+             if (ham && side) {
+                 ham.addEventListener("click", () => {
+                     side.classList.toggle("hidden");
+                 });
+             }
+         });
+     </script>
+     <script>
+ document.addEventListener("DOMContentLoaded", () => {
+     const role = localStorage.getItem("role") || "tenant";
+     const adminBtn = document.querySelector(".admin-btn");
+ 
+     if (adminBtn) {
+         if (role === "tenant") {
+             adminBtn.textContent = "Profile";
+             adminBtn.href = "profile.html"; 
+         } else {
+             adminBtn.textContent = "Admin";
+             adminBtn.href = "profile.html"; 
+         }
+     }
+ });
+ </script>
+ </script>
+ 
+ <script src="assets/js/sidebar-active.js"></script>
 </body>
 
 </html>

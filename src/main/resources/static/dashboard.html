@@ -113,35 +113,26 @@
         <div class="footer-note">� 2025 UEP Boarding House Payment System. Built for a modern boarding house experience.</div>
     </footer>
 
-<!-- DASHBOARD SCRIPT -->
-<script>
-// Sidebar toggle for mobile
-const hamburger = document.getElementById("hamburger");
-const sidebar = document.getElementById("sidebar");
+      <!-- DASHBOARD SCRIPT -->
+      <script>
+      // Close sidebar when clicking on a nav link
+      const sidebar = document.getElementById('sidebar');
+      document.querySelectorAll(".nav a, .sidebar a").forEach(link => {
+          link.addEventListener("click", () => {
+              if (window.innerWidth <= 768) {
+                  sidebar.classList.add("hidden");
+              }
+          });
+      });
 
-if (hamburger) {
-    hamburger.addEventListener("click", () => {
-        sidebar.classList.toggle("hidden");
-    });
-}
+      // Handle window resize
+      window.addEventListener("resize", () => {
+          if (window.innerWidth > 768) {
+              sidebar.classList.remove("hidden");
+          }
+      });
 
-// Close sidebar when clicking on a nav link
-document.querySelectorAll(".nav a, .sidebar a").forEach(link => {
-    link.addEventListener("click", () => {
-        if (window.innerWidth <= 768) {
-            sidebar.classList.add("hidden");
-        }
-    });
-});
-
-// Handle window resize
-window.addEventListener("resize", () => {
-    if (window.innerWidth > 768) {
-        sidebar.classList.remove("hidden");
-    }
-});
-
-// Role-based access control
+     // Role-based access control
 document.addEventListener("DOMContentLoaded", () => {
     const role = localStorage.getItem("role");
     
@@ -304,7 +295,7 @@ const bhInfo = JSON.parse(localStorage.getItem("bhInfo") || "{}");
 const ham = document.getElementById('hamburger');
 const side = document.getElementById('sidebar');
 if (ham && side) {
-    ham.addEventListener('click', () => side.classList.toggle('show'));
+    ham.addEventListener('click', () => side.classList.toggle('hidden'));
 }
 </script>
 <script src="assets/js/sidebar-active.js"></script>

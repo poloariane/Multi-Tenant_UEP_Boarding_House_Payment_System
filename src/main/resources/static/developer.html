@@ -24,6 +24,20 @@
     </div>
 
     <div class="layout">
+
+        <!-- SIDEBAR -->
+        <div class="nav" id="sidebar">
+            <a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a>
+            <a href="tenant-list.html"><i class="fas fa-user-friends"></i> Tenants</a>
+            <a href="pay-rent.html"><i class="fas fa-money-bill-wave"></i> Pay Rent</a>
+            <a href="payment-records.html"><i class="fas fa-receipt"></i> Payment Records</a>
+            <a href="reports.html"><i class="fas fa-file-alt"></i> Reports</a>
+            <a href="notifications.html"><i class="fas fa-bell"></i> Notifications</a>
+            <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+            <a href="calendar.html"><i class="fas fa-calendar"></i> Calendar</a>
+        </div>
+
+        <!-- MAIN CONTENT -->
         <div class="main">
             <div class="dev-card">
                 <div class="section-title"><i class="fas fa-users"></i> Development Team</div>
@@ -76,8 +90,20 @@
                 </div>
             </div>
         </div>
+
     </div>
 
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+    const ham = document.getElementById("hamburger");
+    const side = document.getElementById("sidebar");
+    if (ham && side) {
+        ham.addEventListener("click", () => {
+            side.classList.toggle("hidden");
+        });
+    }
+});
+</script>
     <script src="assets/js/sidebar-active.js"></script>
 </body>
 </html>

@@ -226,24 +226,37 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 </script>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    const role = localStorage.getItem("role") || "tenant";
-    if (role === "admin") {
-        const payRentLink = document.querySelector('a[href="pay-rent.html"]');
-        if (payRentLink) {
-            // Keep the icon, just change the text
-            const icon = payRentLink.querySelector("i");
-            payRentLink.textContent = "Tenant Payments";
-            if (icon) {
-                payRentLink.prepend(icon); // Re-add the icon
-            }
-        }
-    }
-});
-</script>
-
-  <script src="assets/js/sidebar-active.js"></script>
+ <script>
+ document.addEventListener("DOMContentLoaded", () => {
+     const role = localStorage.getItem("role") || "tenant";
+     if (role === "admin") {
+         const payRentLink = document.querySelector('a[href="pay-rent.html"]');
+         if (payRentLink) {
+             // Keep the icon, just change the text
+             const icon = payRentLink.querySelector("i");
+             payRentLink.textContent = "Tenant Payments";
+             if (icon) {
+                 payRentLink.prepend(icon); // Re-add the icon
+             }
+         }
+     }
+ });
+ </script>
+ 
+ <!-- Hamburger toggle -->
+ <script>
+ document.addEventListener("DOMContentLoaded", () => {
+     const ham = document.getElementById("hamburger");
+     const side = document.getElementById("sidebar");
+     if (ham && side) {
+         ham.addEventListener("click", () => {
+             side.classList.toggle("hidden");
+         });
+     }
+ });
+ </script>
+ 
+ <script src="assets/js/sidebar-active.js"></script>
 
 </body>
 </html>

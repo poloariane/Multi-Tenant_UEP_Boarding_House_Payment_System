@@ -14,7 +14,9 @@
 
     <!-- TOP BAR -->
     <div class="topbar">
+        
         <i id="hamburger" class="fas fa-bars"></i>
+
         <a href="about.html" class="title-link">
             <div class="title">
                 <img src="assets/photos/logo.png">
@@ -367,13 +369,19 @@
             if (notifBtn) notifBtn.style.display = "none";
         }
 
-        // Hamburger toggle
-        const ham = document.getElementById("hamburger");
-        const side = document.getElementById("sidebar");
-        ham.addEventListener("click", () => {
-            side.classList.toggle("show");
         });
-    });
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const ham = document.getElementById("hamburger");
+    const side = document.getElementById("sidebar");
+    if (ham && side) {
+        ham.addEventListener("click", () => {
+            side.classList.toggle("hidden");
+        });
+    }
+});
 </script>
 
 <script>
@@ -556,22 +564,22 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 </script>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    const role = localStorage.getItem("role") || "tenant";
-    const adminBtn = document.querySelector(".admin-btn");
+     <script>
+     document.addEventListener("DOMContentLoaded", () => {
+         const role = localStorage.getItem("role") || "tenant";
+         const adminBtn = document.querySelector(".admin-btn");
 
-    if (adminBtn) {
-        if (role === "tenant") {
-            adminBtn.textContent = "Profile";
-            adminBtn.href = "profile.html"; 
-        } else {
-            adminBtn.textContent = "Admin";
-            adminBtn.href = "profile.html"; 
-        }
-    }
-});
-</script>
+         if (adminBtn) {
+             if (role === "tenant") {
+                 adminBtn.textContent = "Profile";
+                 adminBtn.href = "profile.html"; 
+             } else {
+                 adminBtn.textContent = "Admin";
+                 adminBtn.href = "profile.html"; 
+             }
+         }
+     });
+ </script>
 
   <script src="assets/js/sidebar-active.js"></script>
 </body>

@@ -15,7 +15,7 @@
 <div class="topbar">
 
     <i id="hamburger" class="fas fa-bars"></i>
-
+     
     <a href="about.html" class="title-link">
         <div class="title">
             <img src="assets/photos/logo.png" alt="UEP Logo">
@@ -59,7 +59,17 @@
         <div id="notif-container"></div>
     </div>
 </div>
-
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const ham = document.getElementById("hamburger");
+    const side = document.getElementById("sidebar");
+    if (ham && side) {
+        ham.addEventListener("click", () => {
+            side.classList.toggle("hidden");
+        });
+    }
+});
+</script>
 <script>
 /* ── Helpers ─────────────────────────────────────────────────────────── */
 
@@ -327,15 +337,15 @@ document.addEventListener("DOMContentLoaded", () => {
     setActiveFilter("all");
 });
 
-/* ── Live updates when another tab writes to localStorage ───────────── */
+      /* ── Live updates when another tab writes to localStorage ───────────── */
+  
+  window.addEventListener("storage", e => {
+      if (e.key === "tenantPayments" || e.key === "tenants" || e.key === "activeTenant") {
+          renderNotifications();
+      }
+   });
 
-window.addEventListener("storage", e => {
-    if (e.key === "tenantPayments" || e.key === "tenants" || e.key === "activeTenant") {
-        renderNotifications();
-    }
-});
 </script>
-
-  <script src="assets/js/sidebar-active.js"></script>
+<script src="assets/js/sidebar-active.js"></script>
 </body>
 </html>
